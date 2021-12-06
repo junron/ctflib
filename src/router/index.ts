@@ -1,30 +1,30 @@
-import Vue from 'vue'
-import VueRouter, {RouteConfig, Route as BaseRoute} from 'vue-router'
-import Home from '../views/Home.vue'
+import Vue from "vue";
+import VueRouter, {RouteConfig, Route as BaseRoute} from "vue-router";
+import Home from "../views/Home.vue";
 import Login from "@/views/Login.vue";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "/",
+    name: "Home",
+    component: Home,
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  }
-]
+    path: "/login",
+    name: "Login",
+    component: Login,
+  },
+];
 
 const router = new VueRouter({
-  routes
-})
+  routes,
+});
 
 
 export interface Route extends BaseRoute {
   requiresAuth?: boolean
 }
 
-export default router
+export default router;

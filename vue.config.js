@@ -1,6 +1,6 @@
 module.exports = {
   transpileDependencies: [
-    'vuetify',
-    'vuex-persist',
-  ]
-}
+    "vuetify",
+    "vuex-persist",
+  ],
+};

@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from "vue";
 import Component from "vue-class-component";
 import HelloWorld from "@/components/HelloWorld.vue";
 import {mapGetters} from "vuex";
@@ -20,9 +20,9 @@ import {mapGetters} from "vuex";
 @Component({
   name: "Home",
   components: {
-    HelloWorld
+    HelloWorld,
   },
-  computed: mapGetters(["name", "loggedIn"])
+  computed: mapGetters(["name", "loggedIn"]),
 })
 export default class Home extends Vue {
   name!: string

@@ -1,12 +1,12 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 const vuexLocal = new VuexPersistence<State>({
   storage: window.localStorage,
-})
+});
 
 
 export interface State {
@@ -22,34 +22,34 @@ export default new Vuex.Store<State>({
   },
   mutations: {
     setName(state, name: string) {
-      state.name = name
+      state.name = name;
     },
     setDarkMode(state, darkMode: boolean) {
-      state.darkMode = darkMode
+      state.darkMode = darkMode;
     },
   },
   actions: {
     login({commit}, name: string) {
-      commit('setName', name)
+      commit("setName", name);
     },
     toggleDarkMode({commit}) {
-      commit('setDarkMode', !this.state.darkMode)
+      commit("setDarkMode", !this.state.darkMode);
     },
     logout({commit}) {
-      commit('setName', null)
-    }
+      commit("setName", null);
+    },
   },
   getters: {
     name(state) {
-      return state.name
+      return state.name;
     },
     loggedIn(state) {
-      return state.name !== null
+      return state.name !== null;
     },
     darkMode(state) {
-      return state.darkMode
-    }
+      return state.darkMode;
+    },
   },
   modules: {},
-  plugins: [vuexLocal.plugin]
-})
+  plugins: [vuexLocal.plugin],
+});

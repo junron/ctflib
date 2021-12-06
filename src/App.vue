@@ -38,17 +38,17 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue from "vue";
 import Component from "vue-class-component";
 import {mapGetters} from "vuex";
 import {Route} from "@/router";
 
 @Component<App>({
-  name: 'App',
+  name: "App",
   computed: mapGetters(["loggedIn", "darkMode"]),
   mounted() {
     this.$vuetify.theme.dark = this.darkMode;
-  }
+  },
 })
 export default class App extends Vue {
   navDrawerShown = false

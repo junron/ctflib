@@ -25,19 +25,19 @@
 
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from "vue";
 import Component from "vue-class-component";
 
 @Component({
-  name: 'Login'
+  name: "Login",
 })
 export default class Login extends Vue {
-  name = ''
+  name = ""
   password = ""
 
   login(): void {
-    this.$store.dispatch('login', this.name)
-    this.$router.push("/")
+    this.$store.dispatch("login", this.name);
+    this.$router.push("/");
   }
 }
 </script>

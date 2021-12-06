@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from "vue";
 import {Prop} from "vue-property-decorator";
 import Component from "vue-class-component";
 
