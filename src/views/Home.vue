@@ -1,5 +1,14 @@
 <template>
-  <hello-world :msg="name"/>
+  <v-container>
+    <hello-world v-if="loggedIn" :msg="name"/>
+    <v-container v-else
+                 class="ma-4"
+    >
+      Please
+      <router-link to="/login">log in</router-link>
+      to see the content.
+    </v-container>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -13,8 +22,10 @@ import {mapGetters} from "vuex";
   components: {
     HelloWorld
   },
-  computed: mapGetters(["name"])
+  computed: mapGetters(["name", "loggedIn"])
 })
 export default class Home extends Vue {
+  name!: string
+  loggedIn!: boolean
 }
 </script>

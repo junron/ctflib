@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
+import VueRouter, {RouteConfig, Route as BaseRoute} from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from "@/views/Login.vue";
 
@@ -21,5 +21,10 @@ const routes: Array<RouteConfig> = [
 const router = new VueRouter({
   routes
 })
+
+
+export interface Route extends BaseRoute {
+  requiresAuth?: boolean
+}
 
 export default router

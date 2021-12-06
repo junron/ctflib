@@ -4,10 +4,10 @@
       <v-list dense nav>
         <v-list-item v-for="route in $router.options.routes" :key="route.path">
           <v-list-item-title>
-            <router-link
-                @click="navDrawerShown = false"
-                style="text-decoration: none; color: inherit;"
-                :to="route.path">{{ route.name }}
+            <router-link v-if="canDisplayRoute(route)"
+                         @click="navDrawerShown = false"
+                         style="text-decoration: none; color: inherit;"
+                         :to="route.path">{{ route.name }}
             </router-link>
           </v-list-item-title>
         </v-list-item>
@@ -23,7 +23,9 @@
         CTFlib
       </v-app-bar-title>
       <v-spacer/>
-
+      <v-btn icon @click="toggleTheme">
+        <v-icon>mdi-brightness-6</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-main>
@@ -35,11 +37,26 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from "vue-class-component";
+import {mapGetters} from "vuex";
+import {Route} from "@/router";
 
 @Component({
-  name: 'App'
+  name: 'App',
+  computed: mapGetters(["loggedIn"])
 })
 export default class App extends Vue {
   navDrawerShown = false
+  loggedIn!: boolean
+
+  canDisplayRoute(route: Route): boolean {
+    if (this.loggedIn) {
+      return route.path !== "/login";
+    }
+    return !route.requiresAuth;
+  }
+
+  toggleTheme(): void {
+    this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+  }
 }
 </script>
