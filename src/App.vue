@@ -26,6 +26,9 @@
       <v-btn icon @click="toggleTheme">
         <v-icon>mdi-brightness-6</v-icon>
       </v-btn>
+      <v-btn icon @click="logout">
+        <v-icon>mdi-logout</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-main>
@@ -40,13 +43,17 @@ import Component from "vue-class-component";
 import {mapGetters} from "vuex";
 import {Route} from "@/router";
 
-@Component({
+@Component<App>({
   name: 'App',
-  computed: mapGetters(["loggedIn"])
+  computed: mapGetters(["loggedIn", "darkMode"]),
+  mounted() {
+    this.$vuetify.theme.dark = this.darkMode;
+  }
 })
 export default class App extends Vue {
   navDrawerShown = false
   loggedIn!: boolean
+  darkMode!: boolean
 
   canDisplayRoute(route: Route): boolean {
     if (this.loggedIn) {
@@ -56,7 +63,12 @@ export default class App extends Vue {
   }
 
   toggleTheme(): void {
-    this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+    this.$store.dispatch("toggleDarkMode");
+    this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+  }
+
+  logout(): void {
+    this.$store.dispatch("logout");
   }
 }
 </script>
