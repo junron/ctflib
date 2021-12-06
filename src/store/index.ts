@@ -3,13 +3,31 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+export interface State {
+  name: string | null
+}
+
+export default new Vuex.Store<State>({
   state: {
+    name: null
   },
   mutations: {
+    setName(state, name: string) {
+      state.name = name
+    }
   },
   actions: {
+    login({commit}, name: string) {
+      commit('setName', name)
+    }
   },
-  modules: {
-  }
+  getters: {
+    name(state) {
+      return state.name
+    },
+    loggedIn(state) {
+      return state.name !== null
+    }
+  },
+  modules: {}
 })

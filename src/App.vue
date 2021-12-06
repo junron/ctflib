@@ -1,32 +1,45 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-navigation-drawer v-model="navDrawerShown" temporary app>
+      <v-list dense nav>
+        <v-list-item v-for="route in $router.options.routes" :key="route.path">
+          <v-list-item-title>
+            <router-link
+                @click="navDrawerShown = false"
+                style="text-decoration: none; color: inherit;"
+                :to="route.path">{{ route.name }}
+            </router-link>
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    <v-app-bar
+        app
+        color="primary"
+        dark
+    >
+      <v-app-bar-nav-icon @click="navDrawerShown = !navDrawerShown"/>
+      <v-app-bar-title>
+        CTFlib
+      </v-app-bar-title>
+      <v-spacer/>
+
+    </v-app-bar>
+
+    <v-main>
+      <router-view/>
+    </v-main>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import Vue from 'vue';
+import Component from "vue-class-component";
 
-#nav {
-  padding: 30px;
+@Component({
+  name: 'App'
+})
+export default class App extends Vue {
+  navDrawerShown = false
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+</script>
