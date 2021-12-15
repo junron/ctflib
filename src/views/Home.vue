@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <hello-world v-if="loggedIn" :msg="name"/>
+    <main-content v-if="loggedIn" :name="name"/>
     <v-container v-else
                  class="ma-4"
     >
@@ -14,13 +14,13 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue";
+import MainContent from "@/views/MainContent.vue";
 import {mapGetters} from "vuex";
 
 @Component({
   name: "Home",
   components: {
-    HelloWorld,
+    MainContent,
   },
   computed: mapGetters(["name", "loggedIn"]),
 })

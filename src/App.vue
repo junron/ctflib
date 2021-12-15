@@ -72,3 +72,11 @@ export default class App extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+  @import "src/styles/font.scss";
+
+  .v-app-bar-title__content {
+    width: fit-content!important;
+  }
+</style>
