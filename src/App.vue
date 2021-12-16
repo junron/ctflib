@@ -2,12 +2,12 @@
   <v-app>
     <v-navigation-drawer v-model="navDrawerShown" temporary app>
       <v-list dense nav>
-        <v-list-item v-for="route in $router.options.routes" :key="route.path">
+        <v-list-item v-for="route in displayableRoutes" :key="route.path">
           <v-list-item-title>
-            <router-link v-if="canDisplayRoute(route)"
-                         @click="navDrawerShown = false"
-                         style="text-decoration: none; color: inherit;"
-                         :to="route.path">{{ route.name }}
+            <router-link
+                @click="navDrawerShown = false"
+                style="text-decoration: none; color: inherit;"
+                :to="route.path">{{ route.name }}
             </router-link>
           </v-list-item-title>
         </v-list-item>
@@ -42,6 +42,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {mapGetters} from "vuex";
 import {Route} from "@/router";
+import {RouteConfig} from "vue-router";
 
 @Component<App>({
   name: "App",
@@ -55,11 +56,13 @@ export default class App extends Vue {
   loggedIn!: boolean
   darkMode!: boolean
 
-  canDisplayRoute(route: Route): boolean {
-    if (this.loggedIn) {
-      return route.path !== "/login";
-    }
-    return !route.requiresAuth;
+  get displayableRoutes(): RouteConfig[] {
+    return this.$router.options.routes?.filter(route => {
+      if (this.loggedIn) {
+        return route.path !== "/login";
+      }
+      return !(route as Route).requiresAuth;
+    }) ?? [];
   }
 
   toggleTheme(): void {
@@ -74,9 +77,9 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
-  @import "src/styles/font.scss";
+@import "src/styles/font.scss";
 
-  .v-app-bar-title__content {
-    width: fit-content!important;
-  }
+.v-app-bar-title__content {
+  width: fit-content !important;
+}
 </style>

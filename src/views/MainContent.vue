@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-row class="my-4"><span class="text-h5">Hello, {{ name }}!</span></v-row>
-    <v-row class="my-8">
+    <v-row class="my-4 px-3"><span class="text-h5">Hello, {{ name }}!</span></v-row>
+    <v-row class="my-8 px-3">
       <v-text-field
           :height="($vuetify.breakpoint.smAndDown)?'':'100px'"
           :class="['search-field', ($vuetify.breakpoint.smAndDown) ? 'text-h5' : 'text-h4']"
