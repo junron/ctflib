@@ -10,6 +10,20 @@
           label="What do you want to know?"
       />
     </v-row>
+    <v-row>
+      <v-col
+          cols="12"
+          sm="6"
+          lg="3"
+          xl="2"
+          v-for="category in categories" :key="category.name">
+        <category-card
+            :name="category.name"
+            :icon="category.icon"
+            :color="category.color"
+        />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -17,10 +31,40 @@
 import Vue from "vue";
 import {Prop} from "vue-property-decorator";
 import Component from "vue-class-component";
+import CategoryCard from "@/components/CategoryCard.vue";
 
-@Component
+@Component({
+  name: "MainContent",
+  components: {
+    CategoryCard,
+  },
+})
 export default class MainContent extends Vue {
   @Prop() private name!: string;
+  private categories = [{
+    name: "Pwn",
+    icon: "matrix",
+    color: "amber--text",
+  }, {
+    name: "Web",
+    icon: "web",
+    color: "light-blue--text",
+  }, {
+    name: "Misc",
+    icon: "help",
+  }, {
+    name: "Forensics",
+    icon: "magnify",
+    color: "green--text",
+  }, {
+    name: "Rev",
+    icon: "application-braces-outline",
+    color: "red--text",
+  }, {
+    name: "Crypto",
+    icon: "function",
+    color: "purple--text text--lighten-2",
+  }];
 }
 </script>
 
