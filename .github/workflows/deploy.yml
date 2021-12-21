@@ -34,3 +34,4 @@ jobs:
         with:
           path: './dist'
           destination: 'ctflib.junron.dev'
+          parent: false
