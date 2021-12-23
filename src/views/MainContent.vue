@@ -21,6 +21,7 @@
             :name="category.name"
             :icon="category.icon"
             :color="category.color"
+            :posts="category.posts"
         />
       </v-col>
     </v-row>
@@ -45,21 +46,44 @@ export default class MainContent extends Vue {
     name: "Pwn",
     icon: "matrix",
     color: "amber--text",
+    posts: [{
+      title: "Coffee Shop",
+      url: "https://github.com/junron/writeups/blob/master/2021/idek/coffeeshop.md",
+      description: "A simple heap exploitation challenge",
+      tags: ["heap", "uaf", "idek-ctf"],
+    }, {
+      title: "Gradebook",
+      url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/gradebook.md",
+      description: "Heap overflow leads to RCE",
+      tags: ["heap", "tcache", "k3rn3l-ctf"],
+    }],
   }, {
     name: "Web",
     icon: "web",
-    color: "light-blue--text",
+    color: "light-blue--text text--lighten-2",
+    posts: [{
+      title: "phpme",
+      url: "https://github.com/junron/writeups/blob/master/2021/corctf/phpme.md",
+      description: "SOP bypass using HTML form",
+      tags: ["csrf", "php", "cor-ctf"],
+    }],
   }, {
     name: "Misc",
     icon: "help",
-  }, {
-    name: "Forensics",
-    icon: "magnify",
-    color: "green--text",
+    posts: [{
+      title: "Bad seed",
+      url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/badseed.md",
+      description: "Predicting time seeded PRNG",
+      tags: ["k3rn3l-ctf"],
+    }],
   }, {
     name: "Rev",
     icon: "application-braces-outline",
     color: "red--text",
+  }, {
+    name: "Forensics",
+    icon: "magnify",
+    color: "green--text",
   }, {
     name: "Crypto",
     icon: "function",

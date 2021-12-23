@@ -52,9 +52,22 @@ import {CTFEvent} from "@/types/ctftime/CTFEvent";
           ratingPoints: event.ratingPoints,
         };
       });
-      Promise.all(this.$data.events.map((event: CTFEvent) => getEventInfo(event.id))).then(images => {
-        this.$data.images = images.map((image: any) => image.logo);
-      });
+      // Promise.all(this.$data.events.map((event: CTFEvent) => getEventInfo(event.id))).then(images => {
+      //   this.$data.images = images.map((image: any) => image.logo);
+      //   console.log(this.$data.images)
+      // });
+      this.$data.images = [
+        "https://ctftime.org/media/events/k3rn3l4rmy.png",
+        "https://ctftime.org/media/events/ctflogor11.png",
+        "https://ctftime.org/media/events/LogoArtboard_1.png",
+        "https://ctftime.org/media/events/logo_42_1.png",
+        "https://ctftime.org/media/events/poopy_1.png",
+        "https://ctftime.org/media/events/FL_ColorDark.png",
+        "https://ctftime.org/media/events/discord_logo.png",
+        "https://ctftime.org/media/events/dam-logo.png",
+        "https://ctftime.org/media/events/MainM6_1.png",
+        "https://ctftime.org/media/events/corctflogo.png",
+      ];
     });
   },
 })
