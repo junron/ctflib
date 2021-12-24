@@ -2,25 +2,51 @@
   <v-container>
     <v-row class="my-4 px-3"><span class="text-h5">Hello, {{ name }}!</span></v-row>
     <v-row class="my-8 px-3">
-      <v-text-field
+      <v-autocomplete
           :height="($vuetify.breakpoint.smAndDown)?'':'100px'"
           :class="['search-field', ($vuetify.breakpoint.smAndDown) ? 'text-h5' : 'text-h4']"
           filled
           outlined
           label="What do you want to know?"
-      />
+          :items="searchItems"
+          :filter="filterItems"
+          no-data-text="No posts found :("
+      >
+        <template v-slot:item="{ item}">
+          <v-list-item-icon>
+            <v-icon
+                :class="item.category.color"
+            >mdi-{{ item.category.icon }}
+            </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content
+              @click="()=>openPage(item.url)"
+          >
+            <v-list-item-title>{{ item.text }}</v-list-item-title>
+            <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-spacer/>
+          <v-chip-group>
+            <v-chip v-for="tag in item.tags" :key="tag" :color="item.category.color">
+              {{
+                tag
+              }}
+            </v-chip>
+          </v-chip-group>
+        </template>
+      </v-autocomplete>
     </v-row>
     <v-row>
       <v-col
           cols="12"
           sm="6"
-          lg="3"
-          xl="2"
+          lg="4"
+          xl="3"
           v-for="category in categories" :key="category.name">
         <category-card
             :name="category.name"
             :icon="category.icon"
-            :color="category.color"
+            :color="$vuetify.theme.dark ? (category.darkColor || category.color) : category.color"
             :posts="category.posts"
         />
       </v-col>
@@ -45,7 +71,8 @@ export default class MainContent extends Vue {
   private categories = [{
     name: "Pwn",
     icon: "matrix",
-    color: "amber--text",
+    color: "amber--text text--darken-4",
+    darkColor: "amber--text",
     posts: [{
       title: "Coffee Shop",
       url: "https://github.com/junron/writeups/blob/master/2021/idek/coffeeshop.md",
@@ -66,6 +93,11 @@ export default class MainContent extends Vue {
       url: "https://github.com/junron/writeups/blob/master/2021/corctf/phpme.md",
       description: "SOP bypass using HTML form",
       tags: ["csrf", "php", "cor-ctf"],
+    }, {
+      title: "Completely Secure Publishing",
+      url: "https://github.com/junron/writeups/blob/master/2021/bcactf/csp.md",
+      description: "CSP bypass using header injection",
+      tags: ["xss", "csp", "bca-ctf"],
     }],
   }, {
     name: "Misc",
@@ -89,6 +121,34 @@ export default class MainContent extends Vue {
     icon: "function",
     color: "purple--text text--lighten-2",
   }];
+  private searchItems = this.categories.map((category) => {
+    return category.posts?.map(post => {
+      return {
+        text: post.title,
+        value: post.title,
+        url: post.url,
+        description: post.description,
+        tags: post.tags,
+        category,
+      };
+    }) ?? [];
+  }).flat();
+
+
+  // TODO: Create type for item
+  filterItems(item: any, query: string, itemText: string): boolean {
+    if (item.tags.some((tag: string) => {
+      return query.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(query.toLowerCase());
+    })) {
+      return true;
+    }
+    return itemText.toLowerCase().includes(query.toLowerCase());
+  }
+
+  openPage(url: string): void {
+    window.open(url, "_blank");
+  }
+
 }
 </script>
 
