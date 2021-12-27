@@ -74,6 +74,26 @@ export default class MainContent extends Vue {
     color: "amber--text text--darken-4",
     darkColor: "amber--text",
     posts: [{
+      title: "Baby heap",
+      url: "https://github.com/junron/writeups/blob/master/2021/backdoor-ctf/babyheap.md",
+      description: "UAF via integer overflow",
+      tags: ["heap", "uaf", "backdoor-ctf"],
+    }, {
+      title: "Malloc",
+      url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/malloc.md",
+      description: "Malloc returning NULL leads to arbitrary write",
+      tags: ["heap", "malloc", "sieberrsec-ctf"],
+    }, {
+      title: "TurboCrypto2",
+      url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/turbocrypto2.md",
+      description: "OOB write in cpython extension leads to RCE",
+      tags: ["heap", "cpython-extension", "OOB", "sieberrsec-ctf"],
+    }, {
+      title: "Warmup",
+      url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/warmup.md",
+      description: "strcmp bypass via buffer overflow",
+      tags: ["heap", "strcmp", "bof", "sieberrsec-ctf"],
+    },{
       title: "Coffee Shop",
       url: "https://github.com/junron/writeups/blob/master/2021/idek/coffeeshop.md",
       description: "A simple heap exploitation challenge",
@@ -107,6 +127,11 @@ export default class MainContent extends Vue {
       url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/badseed.md",
       description: "Predicting time seeded PRNG",
       tags: ["k3rn3l-ctf"],
+    }, {
+      title: "SCAndal",
+      url: "https://github.com/junron/writeups/blob/master/2021/backdoor-ctf/SCAndal.md",
+      description: "Timing attack on binary search",
+      tags: ["backdoor-ctf"],
     }],
   }, {
     name: "Rev",
