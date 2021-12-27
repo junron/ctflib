@@ -15,7 +15,7 @@
         <template v-slot:item="{ item}">
           <v-list-item-icon>
             <v-icon
-                :class="item.category.color"
+                :class="effectiveColor(item.category)"
             >mdi-{{ item.category.icon }}
             </v-icon>
           </v-list-item-icon>
@@ -27,26 +27,44 @@
           </v-list-item-content>
           <v-spacer/>
           <v-chip-group>
-            <v-chip v-for="tag in item.tags" :key="tag" :color="item.category.color">
-              {{
-                tag
-              }}
+            <v-chip v-for="tag in item.tags" :key="tag" :color="effectiveColor(item.category)">
+              {{ tag }}
             </v-chip>
           </v-chip-group>
         </template>
       </v-autocomplete>
     </v-row>
+    <!-- Important categories   -->
+    <v-row>
+      <v-col
+          cols="12"
+          sm="6"
+          v-for="category in categories.slice(0,2)" :key="category.name">
+        <v-row>
+          <v-col>
+            <category-card
+                :name="category.name"
+                :icon="category.icon"
+                :color="effectiveColor(category)"
+                :posts="category.posts"
+                :important="true"
+            />
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <!--    Not important categories -->
     <v-row>
       <v-col
           cols="12"
           sm="6"
           lg="4"
           xl="3"
-          v-for="category in categories" :key="category.name">
+          v-for="category in categories.slice(2,10)" :key="category.name">
         <category-card
             :name="category.name"
             :icon="category.icon"
-            :color="$vuetify.theme.dark ? (category.darkColor || category.color) : category.color"
+            :color="effectiveColor(category)"
             :posts="category.posts"
         />
       </v-col>
@@ -82,18 +100,18 @@ export default class MainContent extends Vue {
       title: "Malloc",
       url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/malloc.md",
       description: "Malloc returning NULL leads to arbitrary write",
-      tags: ["heap", "malloc", "sieberrsec-ctf"],
+      tags: ["malloc", "sieberrsec-ctf"],
     }, {
       title: "TurboCrypto2",
       url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/turbocrypto2.md",
       description: "OOB write in cpython extension leads to RCE",
-      tags: ["heap", "cpython-extension", "OOB", "sieberrsec-ctf"],
+      tags: ["cpython-extension", "OOB", "sieberrsec-ctf"],
     }, {
       title: "Warmup",
       url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/warmup.md",
       description: "strcmp bypass via buffer overflow",
-      tags: ["heap", "strcmp", "bof", "sieberrsec-ctf"],
-    },{
+      tags: ["strcmp", "bof", "sieberrsec-ctf"],
+    }, {
       title: "Coffee Shop",
       url: "https://github.com/junron/writeups/blob/master/2021/idek/coffeeshop.md",
       description: "A simple heap exploitation challenge",
@@ -168,6 +186,11 @@ export default class MainContent extends Vue {
       return true;
     }
     return itemText.toLowerCase().includes(query.toLowerCase());
+  }
+
+  // TODO: Create types
+  effectiveColor(category: any): string {
+    return this.$vuetify.theme.dark ? (category.darkColor || category.color) : category.color;
   }
 
   openPage(url: string): void {

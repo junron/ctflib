@@ -4,26 +4,31 @@
       <v-spacer/>
       <v-icon :class="color">mdi-{{ icon }}</v-icon>
     </v-card-title>
-    <v-list three-line>
-      <template v-for="(post, index) in posts">
-        <v-divider
-            :key="index"
-        ></v-divider>
-        <v-list-item :key="post.title">
-          <v-list-item-content>
-            <v-list-item-title class="py-4">
-              <a :href="post.url" class="post-link"> {{ post.title }}</a>
-            </v-list-item-title>
-            <v-list-item-subtitle>{{ post.description }}</v-list-item-subtitle>
-            <v-chip-group column>
-              <v-chip
-                  label
-                  v-for="tag in post.tags" :key="tag" :color="color">{{ tag }}
-              </v-chip>
-            </v-chip-group>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
+    <v-list>
+      <v-row class="px-3">
+        <v-col v-for="(post, index) in posts" :key="index"
+               cols="12"
+               :lg="important ? 6 : 12"
+               class="pa-0">
+          <v-divider :key="index"/>
+          <v-list-item :key="post.title">
+            <v-list-item-content>
+              <v-list-item-title class="py-2">
+                <a :href="post.url" class="post-link text-wrap"> {{ post.title }}</a>
+              </v-list-item-title>
+              <v-list-item-subtitle class="text-wrap">
+                {{ post.description }}
+              </v-list-item-subtitle>
+              <v-chip-group column>
+                <v-chip
+                    label
+                    v-for="tag in post.tags" :key="tag" :color="color">{{ tag }}
+                </v-chip>
+              </v-chip-group>
+            </v-list-item-content>
+          </v-list-item>
+        </v-col>
+      </v-row>
     </v-list>
   </v-card>
 </template>
@@ -41,6 +46,7 @@ export default class CategoryCard extends Vue {
   @Prop() name!: string
   @Prop() color!: string
   @Prop() icon!: string
+  @Prop() important!: boolean
   @Prop() posts!: Post[]
 }
 </script>
