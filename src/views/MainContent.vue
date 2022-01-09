@@ -10,6 +10,7 @@
           label="What do you want to know?"
           :items="searchItems"
           :filter="filterItems"
+
           no-data-text="No posts found :("
       >
         <template v-slot:item="{ item}">
@@ -19,14 +20,12 @@
             >mdi-{{ item.category.icon }}
             </v-icon>
           </v-list-item-icon>
-          <v-list-item-content
-              @click="()=>openPage(item.url)"
-          >
+          <v-list-item-content @click="()=>openPage(item.url)">
             <v-list-item-title>{{ item.text }}</v-list-item-title>
             <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
           </v-list-item-content>
-          <v-spacer/>
-          <v-chip-group>
+          <v-spacer v-if="$vuetify.breakpoint.mdAndUp"/>
+          <v-chip-group v-if="$vuetify.breakpoint.mdAndUp">
             <v-chip v-for="tag in item.tags" :key="tag" :color="effectiveColor(item.category)">
               {{ tag }}
             </v-chip>
@@ -77,6 +76,8 @@ import Vue from "vue";
 import {Prop} from "vue-property-decorator";
 import Component from "vue-class-component";
 import CategoryCard from "@/components/CategoryCard.vue";
+import {Category} from "@/types/posts/category";
+import {Post} from "@/types/posts/post";
 
 @Component({
   name: "MainContent",
@@ -86,7 +87,7 @@ import CategoryCard from "@/components/CategoryCard.vue";
 })
 export default class MainContent extends Vue {
   @Prop() private name!: string;
-  private categories = [{
+  private categories: Category[] = [{
     name: "Pwn",
     icon: "matrix",
     color: "amber--text text--darken-4",
@@ -140,6 +141,7 @@ export default class MainContent extends Vue {
   }, {
     name: "Misc",
     icon: "help",
+    color: "",
     posts: [{
       title: "Bad seed",
       url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/badseed.md",
@@ -155,14 +157,18 @@ export default class MainContent extends Vue {
     name: "Rev",
     icon: "application-braces-outline",
     color: "red--text",
+    posts: [],
   }, {
     name: "Forensics",
     icon: "magnify",
     color: "green--text",
+    posts: [],
+
   }, {
     name: "Crypto",
     icon: "function",
     color: "purple--text text--lighten-2",
+    posts: [],
   }];
   private searchItems = this.categories.map((category) => {
     return category.posts?.map(post => {
@@ -178,8 +184,8 @@ export default class MainContent extends Vue {
   }).flat();
 
 
-  // TODO: Create type for item
-  filterItems(item: any, query: string, itemText: string): boolean {
+  filterItems(item: Post, query: string, itemText: string): boolean {
+    // Handle tags
     if (item.tags.some((tag: string) => {
       return query.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(query.toLowerCase());
     })) {
@@ -189,7 +195,7 @@ export default class MainContent extends Vue {
   }
 
   // TODO: Create types
-  effectiveColor(category: any): string {
+  effectiveColor(category: Category): string {
     return this.$vuetify.theme.dark ? (category.darkColor || category.color) : category.color;
   }
 

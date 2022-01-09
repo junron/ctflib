@@ -37,7 +37,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
-import {Post} from "@/types/post";
+import {Post} from "@/types/posts/post";
 
 @Component({
   name: "CategoryCard",
