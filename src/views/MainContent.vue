@@ -10,6 +10,7 @@
           label="What do you want to know?"
           :items="searchItems"
           :filter="filterItems"
+          :search-input.sync="query"
 
           no-data-text="No posts found :("
       >
@@ -77,82 +78,97 @@ import {Prop} from "vue-property-decorator";
 import Component from "vue-class-component";
 import CategoryCard from "@/components/CategoryCard.vue";
 import {Category} from "@/types/posts/category";
-import {Post} from "@/types/posts/post";
+import {Post, PostItem} from "@/types/posts/post";
 
 @Component({
   name: "MainContent",
   components: {
     CategoryCard,
   },
+  watch: {
+    query(newQuery: string) {
+      if(!newQuery) {
+        this.$data.minimum = 1;
+        return;
+      }
+      const queryMatchPoints = this.$data.searchItems.map((item: PostItem) => {
+        return item.queryPoints(newQuery);
+      });
+      this.$data.minimum = Math.max(...queryMatchPoints);
+    },
+  },
 })
 export default class MainContent extends Vue {
   @Prop() private name!: string;
+  private query = "";
+  private minimum = 1;
+
   private categories: Category[] = [{
     name: "Pwn",
     icon: "matrix",
     color: "amber--text text--darken-4",
     darkColor: "amber--text",
-    posts: [{
+    posts: [new Post({
       title: "Baby heap",
       url: "https://github.com/junron/writeups/blob/master/2021/backdoor-ctf/babyheap.md",
       description: "UAF via integer overflow",
       tags: ["heap", "uaf", "backdoor-ctf"],
-    }, {
+    }), new Post({
       title: "Malloc",
       url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/malloc.md",
       description: "Malloc returning NULL leads to arbitrary write",
       tags: ["malloc", "sieberrsec-ctf"],
-    }, {
+    }), new Post({
       title: "TurboCrypto2",
       url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/turbocrypto2.md",
       description: "OOB write in cpython extension leads to RCE",
       tags: ["cpython-extension", "OOB", "sieberrsec-ctf"],
-    }, {
+    }), new Post({
       title: "Warmup",
       url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/warmup.md",
       description: "strcmp bypass via buffer overflow",
       tags: ["strcmp", "bof", "sieberrsec-ctf"],
-    }, {
+    }), new Post({
       title: "Coffee Shop",
       url: "https://github.com/junron/writeups/blob/master/2021/idek/coffeeshop.md",
       description: "A simple heap exploitation challenge",
       tags: ["heap", "uaf", "idek-ctf"],
-    }, {
+    }), new Post({
       title: "Gradebook",
       url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/gradebook.md",
       description: "Heap overflow leads to RCE",
       tags: ["heap", "tcache", "k3rn3l-ctf"],
-    }],
+    })],
   }, {
     name: "Web",
     icon: "web",
     color: "light-blue--text text--lighten-2",
-    posts: [{
+    posts: [new Post({
       title: "phpme",
       url: "https://github.com/junron/writeups/blob/master/2021/corctf/phpme.md",
       description: "SOP bypass using HTML form",
       tags: ["csrf", "php", "cor-ctf"],
-    }, {
+    }), new Post({
       title: "Completely Secure Publishing",
       url: "https://github.com/junron/writeups/blob/master/2021/bcactf/csp.md",
       description: "CSP bypass using header injection",
       tags: ["xss", "csp", "bca-ctf"],
-    }],
+    })],
   }, {
     name: "Misc",
     icon: "help",
     color: "",
-    posts: [{
+    posts: [new Post({
       title: "Bad seed",
       url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/badseed.md",
       description: "Predicting time seeded PRNG",
       tags: ["k3rn3l-ctf"],
-    }, {
+    }), new Post({
       title: "SCAndal",
       url: "https://github.com/junron/writeups/blob/master/2021/backdoor-ctf/SCAndal.md",
       description: "Timing attack on binary search",
       tags: ["backdoor-ctf"],
-    }],
+    })],
   }, {
     name: "Rev",
     icon: "application-braces-outline",
@@ -172,29 +188,21 @@ export default class MainContent extends Vue {
   }];
   private searchItems = this.categories.map((category) => {
     return category.posts?.map(post => {
-      return {
-        text: post.title,
-        value: post.title,
+      return new PostItem({
+        title: post.title,
         url: post.url,
         description: post.description,
         tags: post.tags,
         category,
-      };
+      });
     }) ?? [];
   }).flat();
 
 
-  filterItems(item: Post, query: string, itemText: string): boolean {
-    // Handle tags
-    if (item.tags.some((tag: string) => {
-      return query.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(query.toLowerCase());
-    })) {
-      return true;
-    }
-    return itemText.toLowerCase().includes(query.toLowerCase());
+  filterItems(item: PostItem, query: string): boolean {
+    return item.queryPoints(query) >= this.minimum;
   }
 
-  // TODO: Create types
   effectiveColor(category: Category): string {
     return this.$vuetify.theme.dark ? (category.darkColor || category.color) : category.color;
   }
