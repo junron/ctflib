@@ -1,4 +1,13 @@
-# cs6131
+# CTFlib
+
+Writeup storage and search system. Deployed at [ctflib.junron.dev](https://ctflib.junron.dev).
+
+## Viewing the project
+### Viewing online
+You can view this project online at [ctflib.junron.dev](https://ctflib.junron.dev).
+
+### Viewing locally
+Either follow the instructions below or open [`./dist/index.html`](./dist/index.html) in your browser.
 
 ## Project setup
 ```
@@ -14,11 +23,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
