@@ -20,6 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: |
+          cd frontend
           npm ci
           npm run build
 
@@ -32,6 +33,6 @@ jobs:
       - id: 'upload-folder'
         uses: 'google-github-actions/upload-cloud-storage@v0'
         with:
-          path: './dist'
+          path: './frontend/dist'
           destination: 'ctflib.junron.dev'
           parent: false

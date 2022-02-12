@@ -1,0 +1,35 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "server code for ctflib",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint",
+    "start:dev": "tsnd --watch src --respawn  --transpile-only --rs src/index.ts",
+    "start": "node ./built/src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jro",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.8",
+    "@typescript-eslint/eslint-plugin": "^4.6.0",
+    "@typescript-eslint/parser": "^4.6.0",
+    "eslint": "^7.12.1",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "ts-node-dev": "^1.1.6",
+    "tsc-watch": "^4.2.9",
+    "tslint": "^6.1.3",
+    "typescript": "^3.9.7"
+  }
+}
