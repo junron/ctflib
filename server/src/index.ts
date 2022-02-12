@@ -1,13 +1,8 @@
 import express, {NextFunction} from "express";
+import config from "./config";
+import * as migrations from "./database/migrate";
 
 const app = express();
-
-
-
-app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {
-    res.send("Hello World!");
-});
-
 
 class HttpException extends Error {
   status: number;
@@ -21,30 +16,38 @@ class HttpException extends Error {
   }
 }
 
-app.use(
-  (
-    error: HttpException,
-    req: express.Request,
-    res: express.Response,
-    next: NextFunction,
-  ) => {
-    if (error.status) {
-      res.status(error.status);
-    } else {
-      res.status(500);
-    }
-    res.json({
-      success: false,
-      message: error.message,
-    });
-    next();
-  },
-);
+(async () => {
 
-const port = 8000;
+  await migrations.init();
 
-app.listen(port, () => {
-  console.log(`server is running at http://localhost:${port}`);
-});
+  app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {
+    res.send("Hello World!");
+  });
 
 
+  app.use(
+    (
+      error: HttpException,
+      req: express.Request,
+      res: express.Response,
+      next: NextFunction,
+    ) => {
+      if (error.status) {
+        res.status(error.status);
+      } else {
+        res.status(500);
+      }
+      res.json({
+        success: false,
+        message: error.message,
+      });
+      next();
+    },
+  );
+
+
+  app.listen(config.port, () => {
+    console.log(`server is running at http://localhost:${config.port}`);
+  });
+
+})();
