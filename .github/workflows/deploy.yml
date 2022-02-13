@@ -1,7 +1,8 @@
 on:
   push:
     paths:
-      - frontend/**/*.{js,vue,ts,css,html}
+      - 'frontend/**.ts'
+      - 'frontend/**.vue'
 
 jobs:
   build:
