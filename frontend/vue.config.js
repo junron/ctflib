@@ -4,6 +4,6 @@ module.exports = {
     "vuex-persist",
   ],
   devServer: {
-    proxy: "http://localhost:9000",
+    proxy: "http://localhost:8000",
   },
 };

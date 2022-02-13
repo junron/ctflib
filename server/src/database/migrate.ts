@@ -1,5 +1,6 @@
 import getConnection from "./connect";
 import * as fs from "fs";
+import {RowDataPacket} from "mysql2";
 
 function getMigrations(): Promise<string[]> {
   //  List files in the migrations/progress directory asynchronously
@@ -20,7 +21,7 @@ export async function init() {
                             (
                                 version int not null
                             );`);
-  const [rows, fields] = await connection.execute("select version from migration_version limit 1");
+  const [rows, fields] = await connection.execute<RowDataPacket[]>("select version from migration_version limit 1");
   const version = rows.length == 1 ? rows[0].version : -1;
   const migrations = (await getMigrations()).sort((a: string, b: string) => a.localeCompare(b));
   // Non-atomic migrations but it's probably fine

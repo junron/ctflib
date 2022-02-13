@@ -3,7 +3,7 @@ name: TypeScript build
 on:
   push:
     paths:
-      - /backend/**/*.ts
+      - /server/**/*.ts
 
 jobs:
   build:

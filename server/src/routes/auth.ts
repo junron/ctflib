@@ -1,4 +1,4 @@
-import express, {NextFunction} from "express";
+import express, {NextFunction, Request, Response} from "express";
 import * as crypto from "crypto";
 import config from "../config";
 import {User} from "../models/user";
@@ -6,7 +6,7 @@ import {hash} from "../auth/util";
 
 const router = require('express').Router();
 
-router.post("/login", async (req: express.Request, res: express.Response, next: NextFunction) => {
+router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
   const {username, password} = req.body;
   const user = await User.getByUsername(username);
   if (!user) {
@@ -18,15 +18,9 @@ router.post("/login", async (req: express.Request, res: express.Response, next: 
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7
     });
-    res.json({
-      success: true,
-      message: "Logged in successfully"
-    });
+    res.success("Logged in successfully", user);
   } else {
-    res.json({
-      success: false,
-      message: "Incorrect username or password"
-    });
+    res.failure("Incorrect password");
   }
 });
 
@@ -52,20 +46,13 @@ router.post("/register", async (req: express.Request, res: express.Response, nex
     maxAge: 1000 * 60 * 60 * 24 * 7
   });
 
-  res.json({
-    success: true,
-    message: "User registered"
-  });
+  res.success("Registered successfully");
 });
 
 router.get("/me", async (req: express.Request, res: express.Response, next: NextFunction) => {
   const user = req.user;
   if (!user) return next(new Error("Not logged in"));
-  res.json({
-    success: true,
-    message: "Hello, " + user.username,
-    user,
-  });
+  res.success("Hello, " + user.username, user);
 });
 
 export default router;
