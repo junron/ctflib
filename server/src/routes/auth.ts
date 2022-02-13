@@ -49,10 +49,4 @@ router.post("/register", async (req: express.Request, res: express.Response, nex
   res.success("Registered successfully");
 });
 
-router.get("/me", async (req: express.Request, res: express.Response, next: NextFunction) => {
-  const user = req.user;
-  if (!user) return next(new Error("Not logged in"));
-  res.success("Hello, " + user.username, user);
-});
-
 export default router;
