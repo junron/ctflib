@@ -1,24 +1,27 @@
 import express, {NextFunction} from "express";
 import config from "./config";
 import * as migrations from "./database/migrate";
+import auth from "./auth/middleware";
+import {HttpException} from "./types/HttpException";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
+
+import authRoute from "./routes/auth";
 
 const app = express();
-
-class HttpException extends Error {
-  status: number;
-
-  message: string;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-    this.message = message;
-  }
-}
 
 (async () => {
 
   await migrations.init();
+
+  app.use(bodyParser.json());
+
+  app.use(cookieParser());
+
+  app.use("/me", auth);
+
+  app.use("/", authRoute);
+
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {
     res.send("Hello World!");

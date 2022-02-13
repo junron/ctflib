@@ -1,6 +1,9 @@
 name: TypeScript build
 
-on: [push]
+on:
+  push:
+    paths:
+      - /backend/**/*.ts
 
 jobs:
   build:
