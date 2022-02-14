@@ -23,6 +23,7 @@ const app = express();
     res.header("Access-Control-Allow-Origin", "https://ctflib.junron.dev");
     res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+    res.header("Access-Control-Allow-Credentials", "true");
     next();
   });
 

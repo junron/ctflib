@@ -24,3 +24,4 @@ jobs:
           cd server
           npm ci
           npm run build
+          curl https://hook.junron.dev/hooks/redeploy-webhook

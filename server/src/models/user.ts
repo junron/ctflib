@@ -29,6 +29,10 @@ export class User {
     }, config.secret);
   }
 
+  withoutHash(): User {
+    return new User(this.username, this.email, this.github_username, "redacted");
+  }
+
   async register() {
     const connection = await getConnection();
     await connection.execute(

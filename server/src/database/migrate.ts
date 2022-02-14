@@ -17,10 +17,7 @@ function getMigrations(): Promise<string[]> {
 
 export async function init() {
   const connection = await getConnection();
-  await connection.execute(`create table if not exists migration_version
-                            (
-                                version int not null
-                            );`);
+  await connection.execute(`create table if not exists migration_version(version int not null);`);
   const [rows, fields] = await connection.execute<RowDataPacket[]>("select version from migration_version limit 1");
   const version = rows.length == 1 ? rows[0].version : -1;
   const migrations = (await getMigrations()).sort((a: string, b: string) => a.localeCompare(b));

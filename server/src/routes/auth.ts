@@ -18,7 +18,7 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7
     });
-    res.success("Logged in successfully", user);
+    res.success("Logged in successfully", user.withoutHash());
   } else {
     res.failure("Incorrect password");
   }
@@ -47,6 +47,10 @@ router.post("/register", async (req: express.Request, res: express.Response, nex
   });
 
   res.success("Registered successfully");
+});
+
+router.get("/me", async (req: Request, res: Response, next: NextFunction) => {
+  res.success("User found", req.user);
 });
 
 export default router;
