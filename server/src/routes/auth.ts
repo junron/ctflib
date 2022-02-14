@@ -41,8 +41,11 @@ router.post("/register", async (req: express.Request, res: express.Response, nex
     return;
   }
 
+  // This is ok because CORS headers only allow specific sites to send requests
   res.cookie("token", user.getJWT(), {
     httpOnly: true,
+    secure: true,
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24 * 7
   });
 
