@@ -19,5 +19,6 @@ export function postJSON<T>(path: string, data: any): Promise<Response<T>> {
 export function fetchJSON<T>(path: string): Promise<Response<T>> {
   return fetch(apiRoot + path, {
     method: "GET",
+    credentials: "include",
   }).then((res) => res.json());
 }
