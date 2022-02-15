@@ -11,7 +11,7 @@ declare global {
     interface Response {
       success(message: string, data?: any): void;
 
-      failure(message: string): void;
+      failure(message: string, field?: string): void;
     }
   }
 }
@@ -25,9 +25,10 @@ response.success = function (message: string, data?: any) {
 };
 
 
-response.failure = function (message: string) {
+response.failure = function (message: string, field?: string) {
   this.json({
     success: false,
-    message
+    message,
+    field
   });
 };

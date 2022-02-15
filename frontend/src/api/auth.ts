@@ -13,3 +13,11 @@ export async function register(username: string,
                                secret: string): Promise<Response<null>> {
   return fetchJSON("/register", {username, password, email, github: githubUsername, secret});
 }
+
+export async function me(): Promise<Response<User>> {
+  return (await fetch("/me")).json();
+}
+
+export async function logout(): Promise<Response<null>> {
+  return fetchJSON("/logout", {});
+}

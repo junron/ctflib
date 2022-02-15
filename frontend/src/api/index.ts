@@ -11,5 +11,6 @@ export function fetchJSON<T>(path: string, data: any): Promise<Response<T>> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
+    credentials: "include",
   }).then((res) => res.json());
 }

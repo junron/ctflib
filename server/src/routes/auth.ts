@@ -3,6 +3,7 @@ import * as crypto from "crypto";
 import config from "../config";
 import {User} from "../models/user";
 import {hash} from "../auth/util";
+import {QueryError} from "mysql2";
 
 const router = require('express').Router();
 
@@ -10,8 +11,7 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
   const {username, password} = req.body;
   const user = await User.getByUsername(username);
   if (!user) {
-    next(new Error("User not found"));
-    return;
+    return res.failure("User not found", "name");
   }
   if (user.login(password)) {
     res.cookie("token", user.getJWT(), {
@@ -20,23 +20,26 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
     });
     res.success("Logged in successfully", user.withoutHash());
   } else {
-    res.failure("Incorrect password");
+    res.failure("Incorrect password", "password");
   }
 });
 
 router.post("/register", async (req: express.Request, res: express.Response, next: NextFunction) => {
   const {username, email, github, password, secret} = req.body;
   if (secret.length != config.registration_secret.length) {
-    next(new Error("Invalid secret"));
-    return;
+    return res.failure("Invalid secret", "secret");
   }
   if (!crypto.timingSafeEqual(Buffer.from(secret), Buffer.from(config.registration_secret))) {
-    return next(new Error("Invalid secret"));
+    return res.failure("Invalid secret", "secret");
   }
   const user = new User(username, email, github, hash(password));
   try {
     await user.register();
   } catch (e) {
+    const error = e as QueryError;
+    if(error.code == 'ER_DUP_ENTRY') {
+      return res.failure("A user with that name already exists", "name");
+    }
     next(e);
     return;
   }
@@ -54,6 +57,11 @@ router.post("/register", async (req: express.Request, res: express.Response, nex
 
 router.get("/me", async (req: Request, res: Response, next: NextFunction) => {
   res.success("User found", req.user);
+});
+
+router.post("/logout", async (req: Request, res: Response, next: NextFunction) => {
+  res.clearCookie("token");
+  res.success("Logged out successfully");
 });
 
 export default router;

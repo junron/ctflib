@@ -5,7 +5,7 @@
                  class="ma-4"
     >
       Please
-      <router-link to="/login">log in</router-link>
+      <router-link to="/login">log in or register</router-link>
       to see the content.
     </v-container>
   </v-container>

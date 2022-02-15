@@ -15,7 +15,7 @@
     </v-navigation-drawer>
     <v-app-bar
         app
-        color="primary"
+        color="indigo darken-3"
         dark
     >
       <v-app-bar-nav-icon @click="navDrawerShown = !navDrawerShown"/>
@@ -43,12 +43,18 @@ import Component from "vue-class-component";
 import {mapGetters} from "vuex";
 import {Route} from "@/router";
 import {RouteConfig} from "vue-router";
+import {me, logout} from "@/api/auth";
 
 @Component<App>({
   name: "App",
   computed: mapGetters(["loggedIn", "darkMode"]),
   mounted() {
     this.$vuetify.theme.dark = this.darkMode;
+    me().then(response=>{
+      if (response.success) {
+        this.$store.dispatch("login", response.data.username);
+      }
+    });
   },
 })
 export default class App extends Vue {
@@ -72,6 +78,7 @@ export default class App extends Vue {
 
   logout(): void {
     this.$store.dispatch("logout");
+    logout();
   }
 }
 </script>
