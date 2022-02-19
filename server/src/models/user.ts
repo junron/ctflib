@@ -33,7 +33,7 @@ export class User {
     return new User(this.username, this.email, this.github_username, "redacted");
   }
 
-  async register() {
+  async create() {
     const connection = await getConnection();
     await connection.execute(
       "INSERT INTO user (username, email, github_username, password_hash) VALUES (?, ?, ?, ?)",

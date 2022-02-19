@@ -1,5 +1,7 @@
 import {User} from "../models/user";
-import { response, Response } from "express";
+import express, {response, Response} from "express";
+import {ValidationError} from "class-validator";
+import {QueryError} from "mysql2";
 
 declare global {
   namespace Express {
@@ -12,6 +14,10 @@ declare global {
       success(message: string, data?: any): void;
 
       failure(message: string, field?: string): void;
+
+      validationFailure(errors: ValidationError[]): void;
+
+      handleDup(promise: Promise<any>, entity: string, field: string): Promise<boolean>;
     }
   }
 }
@@ -31,4 +37,31 @@ response.failure = function (message: string, field?: string) {
     message,
     field
   });
+};
+
+response.validationFailure = function (errors: ValidationError[]) {
+  this.json({
+    success: false,
+    errors: errors.map(error => {
+      const constraint = error.constraints ?? {error: `${error.property} is invalid`};
+      return {
+        field: error.property,
+        message: constraint[Object.keys(constraint)[0]]
+      };
+    }),
+  });
+};
+
+response.handleDup = async function (promise: Promise<any>, entity: string, field: string): Promise<boolean> {
+  try {
+    await promise;
+    return false;
+  } catch (err) {
+    const error = err as QueryError;
+    if (error.code == 'ER_DUP_ENTRY') {
+      this.failure(`A ${entity} with that ${field} already exists`, field);
+      return true;
+    }
+    throw err;
+  }
 };

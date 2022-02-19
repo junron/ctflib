@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 
 import authRoute from "./routes/auth";
+import categoryRoute from "./routes/category";
 
 const app = express();
 
@@ -30,6 +31,9 @@ const app = express();
   app.use("/me", auth);
 
   app.use("/", authRoute);
+
+  app.use("/categories", auth);
+  app.use("/categories", categoryRoute);
 
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {

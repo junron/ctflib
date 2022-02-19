@@ -3,7 +3,6 @@ import * as crypto from "crypto";
 import config from "../config";
 import {User} from "../models/user";
 import {hash} from "../auth/util";
-import {QueryError} from "mysql2";
 
 const router = require('express').Router();
 
@@ -33,14 +32,8 @@ router.post("/register", async (req: express.Request, res: express.Response, nex
     return res.failure("Invalid secret", "secret");
   }
   const user = new User(username, email, github, hash(password));
-  try {
-    await user.register();
-  } catch (e) {
-    const error = e as QueryError;
-    if(error.code == 'ER_DUP_ENTRY') {
-      return res.failure("A user with that name already exists", "name");
-    }
-    next(e);
+
+  if (await res.handleDup(user.create(), "user", "name")) {
     return;
   }
 
