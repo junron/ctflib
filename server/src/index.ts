@@ -1,5 +1,6 @@
 import express, {NextFunction} from "express";
 import "./types/express.ext";
+import "reflect-metadata";
 import config from "./config";
 import * as migrations from "./database/migrate";
 import auth from "./auth/middleware";
@@ -9,6 +10,7 @@ import bodyParser from "body-parser";
 
 import authRoute from "./routes/auth";
 import categoryRoute from "./routes/category";
+import resourceRoute from "./routes/resource";
 
 const app = express();
 
@@ -28,12 +30,17 @@ const app = express();
     next();
   });
 
-  app.use("/me", auth);
+  app.use("/me", auth(true));
 
   app.use("/", authRoute);
 
-  app.use("/categories", auth);
+  app.use("/categories/create", auth(true));
   app.use("/categories", categoryRoute);
+
+  app.use("/resources", auth(false));
+  app.use("/resources/create", auth(true));
+  app.use("/resources", resourceRoute);
+
 
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {

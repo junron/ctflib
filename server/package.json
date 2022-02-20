@@ -19,7 +19,8 @@
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "class-validator": "^0.13.2",
-    "class-transformer": "^0.5.1"
+    "class-transformer": "^0.5.1",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@babel/node": "^7.12.1",

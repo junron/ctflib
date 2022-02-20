@@ -1,12 +1,12 @@
 import {User} from "../models/user";
-import express, {response, Response} from "express";
+import {response} from "express";
 import {ValidationError} from "class-validator";
 import {QueryError} from "mysql2";
 
 declare global {
   namespace Express {
     export interface Request {
-      auth?: boolean;
+      auth: boolean;
       user?: User;
     }
 
@@ -18,6 +18,7 @@ declare global {
       validationFailure(errors: ValidationError[]): void;
 
       handleDup(promise: Promise<any>, entity: string, field: string): Promise<boolean>;
+      handleRefViolation(promise: Promise<any>, field: string): Promise<boolean>;
     }
   }
 }
@@ -60,6 +61,20 @@ response.handleDup = async function (promise: Promise<any>, entity: string, fiel
     const error = err as QueryError;
     if (error.code == 'ER_DUP_ENTRY') {
       this.failure(`A ${entity} with that ${field} already exists`, field);
+      return true;
+    }
+    throw err;
+  }
+};
+
+response.handleRefViolation = async function (promise: Promise<any>, field: string): Promise<boolean> {
+  try {
+    await promise;
+    return false;
+  } catch (err) {
+    const error = err as QueryError;
+    if (error.code == 'ER_NO_REFERENCED_ROW_2') {
+      this.failure(`That ${field} does not exist`, field);
       return true;
     }
     throw err;

@@ -1,24 +1,27 @@
 import getConnection from "../database/connect";
 import {RowDataPacket} from "mysql2";
 import {Expose} from "class-transformer";
-import {IsDefined} from "class-validator";
+import {IsBoolean, IsString, ValidateIf} from "class-validator";
 
 export class Category {
   @Expose()
-  @IsDefined()
+  @IsString()
   name: string;
   @Expose()
-  @IsDefined()
+  @IsString()
   icon: string;
   @Expose()
-  @IsDefined()
+  @IsString()
   color: string;
   @Expose()
-  light_color: string|null = null;
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  light_color: string | null = null;
   @Expose()
+  @IsBoolean()
   is_major: boolean = false;
 
-  constructor(name: string, icon: string, color: string, light_color: string|null = null, is_major: boolean = false) {
+  constructor(name: string, icon: string, color: string, light_color: string | null = null, is_major: boolean = false) {
     this.name = name;
     this.icon = icon;
     this.color = color;
