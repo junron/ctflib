@@ -35,11 +35,12 @@ export class Resource extends Post {
       `SELECT post.*, resource.body
        FROM post,
             resource
-       WHERE post_id = ? AND resource_id = post.post_id
-           AND (is_private = false
-          OR ? = true)`, [post_id, auth]);
+       WHERE post_id = ?
+         AND resource_id = post.post_id
+         AND (is_private = false
+           OR ? = true)`, [post_id, auth]);
     if (result.length === 1) {
-      return result[0] as Resource;
+      return (await Post.getTags(result as Resource[]))[0];
     }
     return null;
   }
@@ -52,8 +53,21 @@ export class Resource extends Post {
        FROM post,
             resource
        WHERE resource_id = post.post_id
-           AND (is_private = false
-          OR ? = true)`, [ auth]);
-    return result as Resource[];
+         AND (is_private = false
+           OR ? = true)`, [auth]);
+    return Post.getTags<Resource>(result as Resource[]);
+  }
+
+
+  static async search(query: string, auth: boolean) {
+    const connection = await getConnection();
+    const queryString = `SELECT post.*
+                         FROM post,
+                              resource
+                         WHERE (is_private = false OR ? = true)
+                           AND (title LIKE ? OR post_category LIKE ? OR body LIKE ?)
+                           AND post_id = resource_id`;
+    const [rows] = await connection.execute<RowDataPacket[]>(queryString, [auth, `%${query}%`, `%${query}%`, `%${query}%`]);
+    return Post.getTags<Resource>(rows as Resource[]);
   }
 }

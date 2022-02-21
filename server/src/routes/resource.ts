@@ -24,6 +24,20 @@ router.get("/get/:id", async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
+router.get("/search", async (req: Request, res: Response, next: NextFunction) => {
+  const q = req.query.q;
+  if (typeof q != "string") {
+    res.failure("Invalid query", "q");
+    return;
+  }
+  const resources = await Resource.search(q, req.auth);
+  if (resources) {
+    res.success("Success", resources);
+  } else {
+    res.failure("Resource not found", "id");
+  }
+});
+
 router.post("/create", async (req: Request, res: Response, next: NextFunction) => {
   const resource = plainToInstance(Resource, req.body as Resource, {exposeDefaultValues: true});
   const user = req.user;

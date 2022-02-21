@@ -60,4 +60,23 @@ export class Post {
       throw e;
     }
   }
+
+  static async getTags<T extends Post>(posts: T[]): Promise<T[]> {
+    const connection = await getConnection();
+    const [tags] = await connection.query<RowDataPacket[]>(
+      `SELECT post_id, tag_name
+       FROM post_tag
+       where post_id IN (?)`, [posts.map(post => post.post_id)]);
+    for (const tag of tags) {
+      const post = posts.find(post => post.post_id === tag.post_id) as T;
+      if (post) {
+        if (post.tags != undefined) {
+          post.tags.push(tag.tag_name);
+        } else {
+          post.tags = [tag.tag_name];
+        }
+      }
+    }
+    return posts;
+  }
 }
