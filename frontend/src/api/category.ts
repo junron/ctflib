@@ -1,4 +1,4 @@
-import {Category} from "@/types/posts/category";
+import {Category} from "@/types/category";
 import {fetchJSON} from "@/api/index";
 
 export async function getCategories(): Promise<Category[]> {
