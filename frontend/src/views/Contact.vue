@@ -96,7 +96,7 @@ export default class Contact extends Vue {
   optionIcons = ["mdi-earth", "mdi-email", "mdi-discord", "mdi-github"]
   selectedOption = 0
 
-  contact() {
+  contact(): void {
     console.log("Contact");
   }
 

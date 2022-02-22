@@ -80,6 +80,7 @@ import {mapGetters} from "vuex";
 import {Category} from "@/types/category";
 import {Resource} from "@/types/posts/resource";
 import {getResources} from "@/api/posts/resource";
+import {effectiveColor} from "@/util";
 
 @Component({
   name: "MainContent",
@@ -100,7 +101,7 @@ export default class MainContent extends Vue {
   resources: Resource[] = [];
 
   effectiveColor(category: Category): string {
-    return !this.$vuetify.theme.dark ? (category.light_color || category.color) : category.color;
+    return effectiveColor(category, this.$vuetify.theme.dark);
   }
 
   openPage(url: string): void {

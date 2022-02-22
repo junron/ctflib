@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import Login from "@/views/Login.vue";
 import CTFListing from "@/views/CTFListing.vue";
 import Contact from "@/views/Contact.vue";
+import NewPost from "@/views/NewPost.vue";
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,11 @@ const routes: Array<RouteConfig> = [
     path: "/contact",
     name: "Contact",
     component: Contact,
+  },
+  {
+    path: "/new-post",
+    name: "New Post",
+    component: NewPost,
   },
 ];
 

@@ -25,7 +25,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {getEventInfo, getEvents, getRank} from "@/api/ctftime";
+import {getEvents, getRank} from "@/api/ctftime";
 import EventCard from "@/components/EventCard.vue";
 import formatRank from "@/util";
 import {CTFEvent} from "@/types/ctftime/CTFEvent";

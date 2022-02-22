@@ -14,10 +14,10 @@
           <v-list-item :key="post.title">
             <v-list-item-content>
               <v-list-item-title class="py-2">
-                <a :href="post.url" class="post-link text-wrap"> {{ post.title }}</a>
+                {{ post.title }}
               </v-list-item-title>
               <v-list-item-subtitle class="text-wrap">
-                {{ post.body }}
+                <MarkdownRenderer :content="post.body"/>
               </v-list-item-subtitle>
               <v-chip-group column>
                 <v-chip
@@ -38,9 +38,11 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {Resource} from "@/types/posts/resource";
+import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
 
 @Component({
   name: "CategoryCard",
+  components: {MarkdownRenderer},
 })
 export default class CategoryCard extends Vue {
   @Prop() name!: string
