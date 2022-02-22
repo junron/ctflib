@@ -17,7 +17,7 @@
                 <a :href="post.url" class="post-link text-wrap"> {{ post.title }}</a>
               </v-list-item-title>
               <v-list-item-subtitle class="text-wrap">
-                {{ post.description }}
+                {{ post.body }}
               </v-list-item-subtitle>
               <v-chip-group column>
                 <v-chip
@@ -37,7 +37,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
-import {Post} from "@/types/posts/post";
+import {Resource} from "@/types/posts/resource";
 
 @Component({
   name: "CategoryCard",
@@ -47,7 +47,7 @@ export default class CategoryCard extends Vue {
   @Prop() color!: string
   @Prop() icon!: string
   @Prop() important!: boolean
-  @Prop() posts!: Post[]
+  @Prop() posts!: Resource[]
 }
 </script>
 

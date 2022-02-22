@@ -44,16 +44,22 @@ import {mapGetters} from "vuex";
 import {Route} from "@/router";
 import {RouteConfig} from "vue-router";
 import {me, logout} from "@/api/auth";
+import {getCategories} from "@/api/category";
 
 @Component<App>({
   name: "App",
   computed: mapGetters(["loggedIn", "darkMode"]),
   mounted() {
     this.$vuetify.theme.dark = this.darkMode;
-    me().then(response=>{
+    me().then(response => {
       if (response.success) {
         this.$store.dispatch("login", response.data.username);
+      } else {
+        this.logout();
       }
+    });
+    getCategories().then(categories => {
+      this.$store.dispatch("setCategories", categories);
     });
   },
 })

@@ -8,8 +8,7 @@
           filled
           outlined
           label="What do you want to know?"
-          :items="searchItems"
-          :filter="filterItems"
+          :items="[]"
           :search-input.sync="query"
 
           no-data-text="No posts found :("
@@ -34,19 +33,19 @@
         </template>
       </v-autocomplete>
     </v-row>
-    <!-- Important categories   -->
+    <!-- Major categories   -->
     <v-row>
       <v-col
           cols="12"
           sm="6"
-          v-for="category in categories.slice(0,2)" :key="category.name">
+          v-for="category in categories.filter(category=>category.is_major)" :key="category.name">
         <v-row>
           <v-col>
             <category-card
                 :name="category.name"
                 :icon="category.icon"
                 :color="effectiveColor(category)"
-                :posts="category.posts"
+                :posts="resources.filter(resource=>resource.post_category===category.name)"
                 :important="true"
             />
           </v-col>
@@ -60,12 +59,12 @@
           sm="6"
           lg="4"
           xl="3"
-          v-for="category in categories.slice(2,10)" :key="category.name">
+          v-for="category in categories.filter(category=>!category.is_major)" :key="category.name">
         <category-card
             :name="category.name"
             :icon="category.icon"
             :color="effectiveColor(category)"
-            :posts="category.posts"
+            :posts="resources.filter(resource=>resource.post_category===category.name)"
         />
       </v-col>
     </v-row>
@@ -77,134 +76,31 @@ import Vue from "vue";
 import {Prop} from "vue-property-decorator";
 import Component from "vue-class-component";
 import CategoryCard from "@/components/CategoryCard.vue";
-import {Category} from "@/types/posts/category";
-import {Post, PostItem} from "@/types/posts/post";
+import {mapGetters} from "vuex";
+import {Category} from "@/types/category";
+import {Resource} from "@/types/posts/resource";
+import {getResources} from "@/api/posts/resource";
 
 @Component({
   name: "MainContent",
   components: {
     CategoryCard,
   },
-  watch: {
-    query(newQuery: string) {
-      if(!newQuery) {
-        this.$data.minimum = 1;
-        return;
-      }
-      const queryMatchPoints = this.$data.searchItems.map((item: PostItem) => {
-        return item.queryPoints(newQuery);
-      });
-      this.$data.minimum = Math.max(...queryMatchPoints);
-    },
+  computed: mapGetters(["categories"]),
+  mounted() {
+    getResources().then(resources => {
+      this.$data.resources = resources;
+    });
   },
 })
 export default class MainContent extends Vue {
   @Prop() private name!: string;
   private query = "";
-  private minimum = 1;
-
-  private categories: Category[] = [{
-    name: "Pwn",
-    icon: "matrix",
-    color: "amber--text text--darken-4",
-    darkColor: "amber--text",
-    posts: [new Post({
-      title: "Baby heap",
-      url: "https://github.com/junron/writeups/blob/master/2021/backdoor-ctf/babyheap.md",
-      description: "UAF via integer overflow",
-      tags: ["heap", "uaf", "backdoor-ctf"],
-    }), new Post({
-      title: "Malloc",
-      url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/malloc.md",
-      description: "Malloc returning NULL leads to arbitrary write",
-      tags: ["malloc", "sieberrsec-ctf"],
-    }), new Post({
-      title: "TurboCrypto2",
-      url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/turbocrypto2.md",
-      description: "OOB write in cpython extension leads to RCE",
-      tags: ["cpython-extension", "OOB", "sieberrsec-ctf"],
-    }), new Post({
-      title: "Warmup",
-      url: "https://github.com/junron/writeups/blob/master/2021/sieberrsec/warmup.md",
-      description: "strcmp bypass via buffer overflow",
-      tags: ["strcmp", "bof", "sieberrsec-ctf"],
-    }), new Post({
-      title: "Coffee Shop",
-      url: "https://github.com/junron/writeups/blob/master/2021/idek/coffeeshop.md",
-      description: "A simple heap exploitation challenge",
-      tags: ["heap", "uaf", "idek-ctf"],
-    }), new Post({
-      title: "Gradebook",
-      url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/gradebook.md",
-      description: "Heap overflow leads to RCE",
-      tags: ["heap", "tcache", "k3rn3l-ctf"],
-    })],
-  }, {
-    name: "Web",
-    icon: "web",
-    color: "light-blue--text text--lighten-2",
-    posts: [new Post({
-      title: "phpme",
-      url: "https://github.com/junron/writeups/blob/master/2021/corctf/phpme.md",
-      description: "SOP bypass using HTML form",
-      tags: ["csrf", "php", "cor-ctf"],
-    }), new Post({
-      title: "Completely Secure Publishing",
-      url: "https://github.com/junron/writeups/blob/master/2021/bcactf/csp.md",
-      description: "CSP bypass using header injection",
-      tags: ["xss", "csp", "bca-ctf"],
-    })],
-  }, {
-    name: "Misc",
-    icon: "help",
-    color: "",
-    posts: [new Post({
-      title: "Bad seed",
-      url: "https://github.com/junron/writeups/blob/master/2021/kernelctf/badseed.md",
-      description: "Predicting time seeded PRNG",
-      tags: ["k3rn3l-ctf"],
-    }), new Post({
-      title: "SCAndal",
-      url: "https://github.com/junron/writeups/blob/master/2021/backdoor-ctf/SCAndal.md",
-      description: "Timing attack on binary search",
-      tags: ["backdoor-ctf"],
-    })],
-  }, {
-    name: "Rev",
-    icon: "application-braces-outline",
-    color: "red--text",
-    posts: [],
-  }, {
-    name: "Forensics",
-    icon: "magnify",
-    color: "green--text",
-    posts: [],
-
-  }, {
-    name: "Crypto",
-    icon: "function",
-    color: "purple--text text--lighten-2",
-    posts: [],
-  }];
-  private searchItems = this.categories.map((category) => {
-    return category.posts?.map(post => {
-      return new PostItem({
-        title: post.title,
-        url: post.url,
-        description: post.description,
-        tags: post.tags,
-        category,
-      });
-    }) ?? [];
-  }).flat();
-
-
-  filterItems(item: PostItem, query: string): boolean {
-    return item.queryPoints(query) >= this.minimum;
-  }
+  categories!: Category[];
+  resources: Resource[] = [];
 
   effectiveColor(category: Category): string {
-    return this.$vuetify.theme.dark ? (category.darkColor || category.color) : category.color;
+    return !this.$vuetify.theme.dark ? (category.light_color || category.color) : category.color;
   }
 
   openPage(url: string): void {
