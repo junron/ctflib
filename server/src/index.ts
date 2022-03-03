@@ -11,6 +11,7 @@ import bodyParser from "body-parser";
 import authRoute from "./routes/auth";
 import categoryRoute from "./routes/category";
 import resourceRoute from "./routes/resource";
+import tagsRoute from "./routes/tags";
 
 const app = express();
 
@@ -41,6 +42,8 @@ const app = express();
   app.use("/resources/create", auth(true));
   app.use("/resources", resourceRoute);
 
+  app.use("/tags", auth(false));
+  app.use("/tags", tagsRoute);
 
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {

@@ -5,7 +5,7 @@ import {User} from "../models/user";
 
 export default function (error = true) {
   return function (req: Request, res: Response, next: NextFunction) {
-    if (req.auth) return next();
+    if (req.auth || req.method == "OPTIONS") return next();
 
     // Debug
     if (req.query.noAuth) {
