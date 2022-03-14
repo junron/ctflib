@@ -36,6 +36,7 @@
           <CategoryPicker
               :category.sync="category"/>
           <TagPicker
+              :category="category"
               :tags.sync="tags"/>
           <div v-if="success" class="green--text mb-4">
             <v-icon>mdi-check</v-icon>

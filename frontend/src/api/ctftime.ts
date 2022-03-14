@@ -1,4 +1,3 @@
-import proxy from "@/api/proxy";
 import {CTFEvent} from "@/types/ctftime/CTFEvent";
 
 export async function getRank(): Promise<{ rank: number, localRank: number }> {
@@ -95,9 +94,4 @@ export async function getEvents(): Promise<CTFEvent[]> {
       "ratingInProgress": false,
     },
   ];
-}
-
-// TODO: Refactor to backend
-export async function getEventInfo(id: number): Promise<any> {
-  return proxy(`https://ctftime.org/api/v1/events/${id}/`).then(response => response.json());
 }
