@@ -16,7 +16,7 @@
         >
           <v-row class="mx-1">
             <v-text-field
-                class="mr-8"
+                class="mr-8 my-4"
                 v-model="title"
                 label="Title"
                 @input="errors['title'] = ''; success = false"
