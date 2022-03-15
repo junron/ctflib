@@ -12,6 +12,8 @@ import authRoute from "./routes/auth";
 import categoryRoute from "./routes/category";
 import resourceRoute from "./routes/resource";
 import tagsRoute from "./routes/tags";
+import ctfRoute from "./routes/ctf/ctf";
+import ctftimeRoute from "./routes/ctf/ctftime";
 
 const app = express();
 
@@ -45,6 +47,8 @@ const app = express();
   app.use("/tags", auth(false));
   app.use("/tags", tagsRoute);
 
+  app.use("/ctfs", ctfRoute);
+  app.use("/ctftime", ctftimeRoute);
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {
     res.send("Hello World!");

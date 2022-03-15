@@ -52,16 +52,3 @@ export default class CategoryCard extends Vue {
   @Prop() posts!: Resource[]
 }
 </script>
-
-
-<style lang="scss">
-a.post-link, a.post-link:visited {
-  color: unset;
-  text-decoration: none;
-}
-
-a.post-link:hover {
-  color: unset;
-  text-decoration: underline;
-}
-</style>
