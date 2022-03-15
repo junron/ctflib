@@ -12,6 +12,7 @@
         class="my-4 align-center mx-auto" max-width="500px">
       <v-card-text>
         <v-form
+            ref="form"
             v-model="valid"
         >
           <v-row class="mx-1">
@@ -41,11 +42,16 @@
           <div v-if="success" class="green--text mb-4">
             <v-icon>mdi-check</v-icon>
             Your post has been created!
+            <v-btn class="ml-4"
+                   color="success"
+                   @click="reset()">
+              Post another!
+            </v-btn>
           </div>
-          <v-btn
-              color="success"
-              @click="createResource()"
-              :disabled="!valid || !category.length || success">
+          <v-btn v-else
+                 color="success"
+                 @click="createResource()"
+                 :disabled="!valid || !category.length || success">
             Submit
           </v-btn>
         </v-form>
@@ -88,6 +94,10 @@ export default class NewPost extends Vue {
     }).then(response => {
       this.success = response.success;
     });
+  }
+
+  reset(): void {
+    (this.$refs.form as HTMLFormElement).reset();
   }
 }
 </script>

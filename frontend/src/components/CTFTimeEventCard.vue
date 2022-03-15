@@ -6,7 +6,7 @@
           class="my-6"
           align="center"
           justify="center">
-        <v-col class="mx-1">
+        <v-col class="mx-2">
           <v-row
               class="font-weight-bold"
               style="font-size: 1.5em"
@@ -22,7 +22,7 @@
             {{ ctftimeEvent.num_teams }} teams
           </v-row>
         </v-col>
-        <v-col class="mx-1">
+        <v-col class="mx-2">
           <v-row
               class="font-weight-bold"
               style="font-size: 1.5em"
@@ -44,8 +44,7 @@
           contain :src="ctftimeEvent.image_url"/>
     </template>
     <template v-slot:actions>
-      <v-row>
-
+      <v-row class="py-1">
         <v-col align="center"
                justify="center">
           <a class="title-link"

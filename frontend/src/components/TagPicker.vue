@@ -19,12 +19,15 @@ import {getTags} from "@/api/tags";
 @Component({
   name: "TagPicker",
   watch: {
-    category: function (val: string|null) {
-      if(val){
+    category: function (val: string | null) {
+      if (val) {
         getTags(val).then((tags) => {
           this.$data.suggestedTags = tags;
         });
       }
+    },
+    tags: function (val: string[]) {
+      this.$data.localTags = val;
     },
   },
 })

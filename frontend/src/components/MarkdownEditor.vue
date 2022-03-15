@@ -36,6 +36,11 @@ import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
 @Component({
   name: "MarkdownEditor",
   components: {MarkdownRenderer},
+  watch: {
+    content: function (val: string) {
+      this.$data.localContent = val;
+    },
+  },
 })
 export default class MarkdownEditor extends Vue {
   @Prop() public content!: string;

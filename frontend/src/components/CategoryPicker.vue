@@ -32,6 +32,14 @@ import {Prop} from "vue-property-decorator";
 @Component({
   name: "CategoryPicker",
   computed: mapGetters(["categories"]),
+  watch: {
+    category: {
+      immediate: true,
+      handler(newCategory: string) {
+        this.$data.localCategory = newCategory;
+      },
+    },
+  },
 })
 export default class CategoryPicker extends Vue {
   public categories!: Category[]
