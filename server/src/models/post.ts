@@ -95,4 +95,11 @@ export class Post {
          and (is_private = false or ? = true)`, [category, auth]);
     return tags.map(tag => tag.tag_name);
   }
+
+  async deletePost(_connection?: Connection){
+    const connection = _connection ?? await getConnection();
+    const query = "DELETE FROM post WHERE post_id = ?";
+    await connection.execute(query, [this.post_id]);
+  }
+
 }

@@ -1,5 +1,5 @@
 import {Post} from "./post";
-import {Expose} from "class-transformer";
+import {Expose, plainToInstance} from "class-transformer";
 import {IsString} from "class-validator";
 import getConnection from "../database/connect";
 import {RowDataPacket} from "mysql2";
@@ -40,7 +40,8 @@ export class Resource extends Post {
          AND (is_private = false
            OR ? = true)`, [post_id, auth]);
     if (result.length === 1) {
-      return (await Post.getTags(result as Resource[]))[0];
+      const resource = (await Post.getTags(result as Resource[]))[0];
+      return plainToInstance(Resource, resource, {exposeDefaultValues: true});
     }
     return null;
   }
@@ -55,7 +56,22 @@ export class Resource extends Post {
        WHERE resource_id = post.post_id
          AND (is_private = false
            OR ? = true)`, [auth]);
-    return Post.getTags<Resource>(result as Resource[]);
+    return plainToInstance(Resource,Post.getTags<Resource>(result as Resource[]));
+  }
+
+  async deleteResource() {
+    const connection = await getConnection();
+    await connection.beginTransaction();
+    try {
+      await connection.execute(`DELETE
+                                FROM resource
+                                WHERE resource_id = ?`, [this.post_id]);
+      await super.deletePost(connection);
+      await connection.commit();
+    } catch (e) {
+      await connection.rollback();
+      throw e;
+    }
   }
 
 
@@ -68,6 +84,6 @@ export class Resource extends Post {
                            AND (title LIKE ? OR post_category LIKE ? OR body LIKE ?)
                            AND post_id = resource_id`;
     const [rows] = await connection.execute<RowDataPacket[]>(queryString, [auth, `%${query}%`, `%${query}%`, `%${query}%`]);
-    return Post.getTags<Resource>(rows as Resource[]);
+    return plainToInstance(Resource,Post.getTags<Resource>(rows as Resource[]));
   }
 }

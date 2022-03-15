@@ -42,6 +42,7 @@ const app = express();
 
   app.use("/resources", auth(false));
   app.use("/resources/create", auth(true));
+  app.use("/resources/delete", auth(true));
   app.use("/resources", resourceRoute);
 
   app.use("/tags", auth(false));

@@ -56,4 +56,21 @@ router.post("/create", async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
+
+router.delete("/delete/:id", async (req: Request, res: Response, next: NextFunction) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.failure("Invalid ID", "id");
+    return;
+  }
+  const resource = await Resource.getResourceById(id, req.auth);
+  if (resource) {
+    await resource.deleteResource();
+    res.success("Resource deleted", resource);
+  } else {
+    res.failure("Resource not found", "id");
+  }
+});
+
+
 export default router;
