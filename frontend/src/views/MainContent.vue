@@ -47,6 +47,7 @@
                 :color="effectiveColor(category)"
                 :posts="resources.filter(resource=>resource.post_category===category.name)"
                 :important="true"
+                @reload="loadResources"
             />
           </v-col>
         </v-row>
@@ -65,6 +66,7 @@
             :icon="category.icon"
             :color="effectiveColor(category)"
             :posts="resources.filter(resource=>resource.post_category===category.name)"
+            @reload="loadResources"
         />
       </v-col>
     </v-row>
@@ -89,9 +91,7 @@ import {effectiveColor} from "@/util";
   },
   computed: mapGetters(["categories"]),
   mounted() {
-    getResources().then(resources => {
-      this.$data.resources = resources;
-    });
+    (this as MainContent).loadResources();
   },
 })
 export default class MainContent extends Vue {
@@ -102,6 +102,12 @@ export default class MainContent extends Vue {
 
   effectiveColor(category: Category): string {
     return effectiveColor(category, this.$vuetify.theme.dark);
+  }
+
+  loadResources(): void {
+    getResources().then(resources => {
+      this.$data.resources = resources;
+    });
   }
 
   openPage(url: string): void {

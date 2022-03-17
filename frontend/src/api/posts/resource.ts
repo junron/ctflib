@@ -18,3 +18,10 @@ export type PostResource = {
 export async function createResource(resource: PostResource): Promise<Response<Resource>> {
   return postJSON<Resource>("/resources/create", resource);
 }
+
+export async function deleteResource(resourceId: number): Promise<Response<null>> {
+  return fetch(`/resources/delete/${resourceId}`, {
+    method: "DELETE",
+    credentials: "include",
+  }).then(res => res.json());
+}
