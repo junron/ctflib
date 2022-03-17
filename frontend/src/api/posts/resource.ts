@@ -1,5 +1,5 @@
 import {Resource} from "@/types/posts/resource";
-import {fetchJSON, postJSON} from "@/api";
+import {apiRoot, fetchJSON, postJSON} from "@/api";
 import {Response} from "@/types/response";
 
 export async function getResources(): Promise<Resource[]> {
@@ -20,7 +20,7 @@ export async function createResource(resource: PostResource): Promise<Response<R
 }
 
 export async function deleteResource(resourceId: number): Promise<Response<null>> {
-  return fetch(`/resources/delete/${resourceId}`, {
+  return fetch(apiRoot + `/resources/delete/${resourceId}`, {
     method: "DELETE",
     credentials: "include",
   }).then(res => res.json());
