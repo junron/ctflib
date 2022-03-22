@@ -36,9 +36,9 @@
               :error="errors['body']"
           />
           <CategoryPicker
-              :category.sync="localResource.category"/>
+              :category.sync="localResource.post_category"/>
           <TagPicker
-              :category="localResource.category"
+              :category="localResource.post_category"
               :tags.sync="localResource.tags"/>
           <div v-if="success" class="green--text mb-4">
             <v-icon>mdi-check</v-icon>
@@ -53,21 +53,21 @@
           <v-btn v-else-if="!resource"
                  color="success"
                  @click="createResource()"
-                 :disabled="!valid || !localResource.category.length || success">
+                 :disabled="!valid || !localResource.post_category.length || success">
             Submit
           </v-btn>
           <!--    Button for saving exited post -->
           <v-btn v-else
                  color="blue"
                  @click="editResource()"
-                 :disabled="!valid || !localResource.category.length || success">
+                 :disabled="!valid || !localResource.post_category.length || success">
             Save changes
           </v-btn>
           <!--    Button for saving exited post -->
           <v-btn
               class="mx-4"
               @click="back"
-              :disabled="success">
+              v-if="!success">
             Cancel
           </v-btn>
         </v-form>
@@ -84,8 +84,9 @@ import Component from "vue-class-component";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
 import CategoryPicker from "@/components/CategoryPicker.vue";
 import TagPicker from "@/components/TagPicker.vue";
-import {createResource, PostResource} from "@/api/posts/resource";
+import {createResource, editResource} from "@/api/posts/resource";
 import {Prop} from "vue-property-decorator";
+import {Resource} from "@/types/posts/resource";
 
 @Component({
   name: "NewPost",
@@ -99,10 +100,10 @@ export default class NewPost extends Vue {
   // Passed in as a string because vue router
   @Prop() public resource!: string | null;
 
-  private localResource: PostResource = this.$props.resource ? JSON.parse(this.$props.resource) : {
+  private localResource:  Resource = this.$props.resource ? JSON.parse(this.$props.resource) : {
     title: "",
     body: "",
-    category: "",
+    post_category: "",
     tags: [],
     is_private: false,
   }
@@ -114,9 +115,10 @@ export default class NewPost extends Vue {
   }
 
   editResource(): void {
-    //  TODO: Do edit resource here
-    console.log("Saving ", this.localResource);
-    this.back();
+    editResource(this.localResource).then(response => {
+      this.success = response.success;
+      this.back();
+    });
   }
 
   back(): void {

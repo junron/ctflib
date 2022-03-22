@@ -14,7 +14,7 @@ export class Post {
   poster_username: string;
   @Expose()
   @IsString()
-  category: string;
+  post_category: string;
   @Expose()
   @IsString()
   title: string;
@@ -27,7 +27,7 @@ export class Post {
   constructor(poster_username: string, category: string, title: string, is_private: boolean = true, tags: string[] = []) {
     this.post_id = -1;
     this.poster_username = poster_username;
-    this.category = category;
+    this.post_category = category;
     this.title = title;
     this.is_private = is_private;
     this.tags = tags;
@@ -37,7 +37,7 @@ export class Post {
     const connection = _connection ?? await getConnection();
     const query = "INSERT INTO post (poster_username, post_category, title, is_private) VALUES (?, ?, ?, ?)";
     try {
-      await connection.execute(query, [this.poster_username, this.category, this.title, this.is_private]);
+      await connection.execute(query, [this.poster_username, this.post_category, this.title, this.is_private]);
       const [lastID] = await connection.execute<RowDataPacket[]>("SELECT LAST_INSERT_ID() as id");
       this.post_id = lastID[0].id;
       if (this.tags.length > 0) {
@@ -96,10 +96,30 @@ export class Post {
     return tags.map(tag => tag.tag_name);
   }
 
-  async deletePost(_connection?: Connection){
+  async deletePost(_connection?: Connection) {
     const connection = _connection ?? await getConnection();
     const query = "DELETE FROM post WHERE post_id = ?";
     await connection.execute(query, [this.post_id]);
+  }
+
+  async updatePost(newPost: Post, _connection?: Connection) {
+    const connection = _connection ?? await getConnection();
+    const query = "UPDATE post SET post_category = ?, title = ?, is_private = ? WHERE post_id = ?";
+    await connection.execute(query, [newPost.post_category, newPost.title, newPost.is_private, this.post_id]);
+    await this.updateTags(newPost, connection);
+  }
+
+  private async updateTags(newPost: Post, connection: Connection): Promise<void> {
+    const tagsToRemove = this.tags.filter(tag => !newPost.tags.includes(tag));
+    const tagsToAdd = newPost.tags.filter(tag => !this.tags.includes(tag));
+    if (tagsToRemove.length > 0) {
+      await connection.query("DELETE FROM post_tag WHERE post_id = ? AND tag_name IN (?)",
+        [this.post_id, tagsToRemove]);
+    }
+    if (tagsToAdd.length > 0) {
+      await connection.query("INSERT INTO post_tag (post_id, tag_name) VALUES ? ",
+        [tagsToAdd.map(tag => [this.post_id, tag])]);
+    }
   }
 
 }

@@ -56,7 +56,7 @@ export class Resource extends Post {
        WHERE resource_id = post.post_id
          AND (is_private = false
            OR ? = true)`, [auth]);
-    return plainToInstance(Resource,Post.getTags<Resource>(result as Resource[]));
+    return plainToInstance(Resource, Post.getTags<Resource>(result as Resource[]));
   }
 
   async deleteResource() {
@@ -84,6 +84,19 @@ export class Resource extends Post {
                            AND (title LIKE ? OR post_category LIKE ? OR body LIKE ?)
                            AND post_id = resource_id`;
     const [rows] = await connection.execute<RowDataPacket[]>(queryString, [auth, `%${query}%`, `%${query}%`, `%${query}%`]);
-    return plainToInstance(Resource,Post.getTags<Resource>(rows as Resource[]));
+    return plainToInstance(Resource, Post.getTags<Resource>(rows as Resource[]));
+  }
+
+  async editResource(newResource: Resource): Promise<void> {
+    const connection = await getConnection();
+    await connection.beginTransaction();
+    try {
+      await this.updatePost(newResource, connection);
+      await connection.query("UPDATE resource SET body = ? WHERE resource_id = ?", [newResource.body, this.post_id]);
+      await connection.commit();
+    } catch (e) {
+      await connection.rollback();
+      throw e;
+    }
   }
 }

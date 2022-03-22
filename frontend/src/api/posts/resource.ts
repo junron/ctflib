@@ -7,15 +7,7 @@ export async function getResources(): Promise<Resource[]> {
   return response.data;
 }
 
-export type PostResource = {
-  title: string,
-  category: string,
-  is_private: boolean,
-  tags: string[],
-  body: string,
-}
-
-export async function createResource(resource: PostResource): Promise<Response<Resource>> {
+export async function createResource(resource: Resource): Promise<Response<Resource>> {
   return postJSON<Resource>("/resources/create", resource);
 }
 
@@ -24,4 +16,8 @@ export async function deleteResource(resourceId: number): Promise<Response<null>
     method: "DELETE",
     credentials: "include",
   }).then(res => res.json());
+}
+
+export async function editResource(resource: Resource): Promise<Response<Resource>> {
+  return postJSON<Resource>("/resources/edit/"+resource.post_id, resource);
 }
