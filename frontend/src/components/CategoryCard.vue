@@ -14,11 +14,17 @@
           <v-list-item :key="post.title">
             <v-list-item-content>
               <v-list-item-title class="py-2">
-                <v-row>
-                  <v-col class="ma-auto">
+                <v-row i>
+                  <v-col class="ma-auto text-wrap">
                     {{ post.title }}
+                    <v-spacer/>
                   </v-col>
-                  <v-col align="end">
+                  <v-col align="end" v-if="loggedIn" cols="auto">
+                    <v-btn icon
+                           @click="editResource(post)"
+                    >
+                      <v-icon color="blue">mdi-pencil</v-icon>
+                    </v-btn>
                     <v-btn icon
                            @click="deleteResource(post)"
                     >
@@ -54,12 +60,15 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {Resource} from "@/types/posts/resource";
 import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
-import {deleteResource} from "@/api/posts/resource";
+import {deleteResource, PostResource} from "@/api/posts/resource";
 import Confirmation from "@/components/Confirmation.vue";
+import {RawLocation} from "vue-router";
+import {mapGetters} from "vuex";
 
 @Component({
   name: "CategoryCard",
   components: {Confirmation, MarkdownRenderer},
+  computed: mapGetters(["loggedIn"]),
 })
 export default class CategoryCard extends Vue {
   @Prop() name!: string
@@ -67,6 +76,8 @@ export default class CategoryCard extends Vue {
   @Prop() icon!: string
   @Prop() important!: boolean
   @Prop() posts!: Resource[]
+
+  private loggedIn!: boolean
 
   $refs!: {
     confirmation: Confirmation
@@ -82,6 +93,11 @@ export default class CategoryCard extends Vue {
         });
       }
     });
+  }
+
+  editResource(post: Resource): void {
+    const postResource = (Object.assign(post, {category: post.post_category})) as PostResource;
+    this.$router.replace({name: "New Post", params: {resource: JSON.stringify(postResource)}});
   }
 }
 </script>

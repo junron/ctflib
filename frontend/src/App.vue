@@ -41,9 +41,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {mapGetters} from "vuex";
-import {Route} from "@/router";
 import {RouteConfig} from "vue-router";
-import {me, logout} from "@/api/auth";
+import {logout, me} from "@/api/auth";
 import {getCategories} from "@/api/category";
 
 @Component<App>({
@@ -73,7 +72,7 @@ export default class App extends Vue {
       if (this.loggedIn) {
         return route.path !== "/login";
       }
-      return !(route as Route).requiresAuth;
+      return route.meta?.requiresAuth != true;
     }) ?? [];
   }
 

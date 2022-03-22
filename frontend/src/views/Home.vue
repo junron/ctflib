@@ -1,12 +1,14 @@
 <template>
   <v-container>
-    <main-content v-if="loggedIn" :name="name"/>
+    <main-content v-if="loggedInOrAnonymous" :name="name"/>
     <v-container v-else
                  class="ma-4"
     >
       Please
       <router-link to="/login">log in or register</router-link>
-      to see the content.
+      to see the content.<br>
+      Or
+      <span @click="loginAnonymously"> <router-link to="/">browse anonymously</router-link> </span>.
     </v-container>
   </v-container>
 </template>
@@ -22,10 +24,15 @@ import {mapGetters} from "vuex";
   components: {
     MainContent,
   },
-  computed: mapGetters(["name", "loggedIn"]),
+  computed: mapGetters(["name", "loggedInOrAnonymous"]),
 })
 export default class Home extends Vue {
   name!: string
-  loggedIn!: boolean
+  loggedInOrAnonymous!: boolean
+
+  loginAnonymously(): void {
+    console.log("sus");
+    this.$store.dispatch("loginAnonymously");
+  }
 }
 </script>

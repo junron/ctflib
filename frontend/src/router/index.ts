@@ -1,5 +1,5 @@
 import Vue from "vue";
-import VueRouter, {RouteConfig, Route as BaseRoute} from "vue-router";
+import VueRouter, {Route as BaseRoute, RouteConfig} from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "@/views/Login.vue";
 import CTFListing from "@/views/CTFListing.vue";
@@ -33,6 +33,10 @@ const routes: Array<RouteConfig> = [
     path: "/new-post",
     name: "New Post",
     component: NewPost,
+    props: true,
+    meta: {
+      requiresAuth: true,
+    },
   },
 ];
 

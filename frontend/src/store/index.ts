@@ -14,6 +14,7 @@ export interface State {
   name: string | null,
   darkMode: boolean,
   categories: Category[]
+  anonymous: boolean
 }
 
 
@@ -22,6 +23,7 @@ export default new Vuex.Store<State>({
     name: null,
     darkMode: false,
     categories: [],
+    anonymous: false,
   },
   mutations: {
     setName(state, name: string) {
@@ -33,10 +35,18 @@ export default new Vuex.Store<State>({
     setCategories(state, categories: Category[]) {
       state.categories = categories;
     },
+    setAnonymous(state, anonymous: boolean) {
+      state.anonymous = anonymous;
+    },
   },
   actions: {
     login({commit}, name: string) {
       commit("setName", name);
+      commit("setAnonymous", false);
+    },
+    loginAnonymously({commit}) {
+      commit("setAnonymous", true);
+      commit("setName", "Anonymous");
     },
     toggleDarkMode({commit}) {
       commit("setDarkMode", !this.state.darkMode);
@@ -46,6 +56,7 @@ export default new Vuex.Store<State>({
     },
     logout({commit}) {
       commit("setName", null);
+      commit("setAnonymous", false);
     },
   },
   getters: {
@@ -53,7 +64,13 @@ export default new Vuex.Store<State>({
       return state.name;
     },
     loggedIn(state) {
-      return state.name !== null;
+      return state.name !== null && !state.anonymous;
+    },
+    anonymous(state) {
+      return state.anonymous;
+    },
+    loggedInOrAnonymous(state) {
+      return state.name !== null || state.anonymous;
     },
     darkMode(state) {
       return state.darkMode;

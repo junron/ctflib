@@ -1,5 +1,5 @@
 <template>
-  <div v-html="html"></div>
+  <div style="max-width: 468px" v-html="html"></div>
 </template>
 
 
