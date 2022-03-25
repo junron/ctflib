@@ -6,6 +6,7 @@ import CTFListing from "@/views/CTFListing.vue";
 import Contact from "@/views/Contact.vue";
 import NewPost from "@/views/NewPost.vue";
 import ChallengeListing from "@/views/ChallengeListing.vue";
+import WriteupDisplay from "@/views/WriteupDisplay.vue";
 
 Vue.use(VueRouter);
 
@@ -43,6 +44,14 @@ const routes: Array<RouteConfig> = [
     path: "/ctfs/:id",
     name: "CTF",
     component: ChallengeListing,
+    meta: {
+      show: false,
+    },
+  },
+    {
+    path: "/writeups/:eventID/:challengeID/:writeupID",
+    name: "CTF",
+    component: WriteupDisplay,
     meta: {
       show: false,
     },
