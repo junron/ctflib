@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {CTF} from "../../models/ctf/ctf";
+import challengeRouter from "./challenge";
 
 const router = require('express').Router();
 
@@ -14,13 +15,14 @@ router.get("/get/:id", async (req: Request, res: Response, next: NextFunction) =
     res.failure("Invalid ID", "id");
     return;
   }
-  const resource = await CTF.getCTFById(id);
-  if (resource) {
-    res.success("Success", resource);
+  const ctf = await CTF.getCTFById(id);
+  if (ctf) {
+    res.success("Success", ctf);
   } else {
     res.failure("CTF not found", "id");
   }
 });
 
+router.use("/get/:ctfID/challenges", challengeRouter);
 
 export default router;

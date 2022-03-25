@@ -1,8 +1,9 @@
 import {RowDataPacket} from "mysql2";
-import {Exclude, Expose, plainToClass, plainToInstance} from "class-transformer";
+import {Exclude, Expose, plainToInstance} from "class-transformer";
 import {IsDate, IsNumber, IsString} from "class-validator";
 import {Connection} from "mysql2/promise";
 import getConnection from "../../database/connect";
+import {Challenge} from "../challenge/challenge";
 
 @Exclude()
 export class CTF {
@@ -43,6 +44,15 @@ export class CTF {
                 inner join ctf_series cs on ctf_event.ctf_name = cs.name
        where event_id = ?`, [id]);
     return plainToInstance(CTF, rows[0] as CTF, {exposeDefaultValues: true});
+  }
+
+  async getChallenges(): Promise<Challenge[]> {
+    const connection: Connection = await getConnection();
+    const [rows]: [RowDataPacket[], any] = await connection.execute(
+      `SELECT challenge_id, event_id, category_name,
+       name, description, points from challenge
+       where event_id = ?`, [this.event_id]);
+    return plainToInstance(Challenge, rows, {exposeDefaultValues: true});
   }
 
 }
