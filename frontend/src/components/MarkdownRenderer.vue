@@ -1,5 +1,5 @@
 <template>
-  <div style="max-width: 468px" v-html="html"></div>
+  <div :style="{'max-width': maxWidth ? maxWidth : '468px'}" v-html="html"></div>
 </template>
 
 
@@ -61,6 +61,7 @@ import "highlight.js/styles/github-dark-dimmed.css";
 })
 export default class MarkdownRenderer extends Vue {
   @Prop() public content!: string;
+  @Prop() public maxWidth?: string;
 }
 </script>
 

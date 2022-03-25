@@ -14,18 +14,28 @@
           <v-list-item :key="post.title">
             <v-list-item-content>
               <v-list-item-title class="py-2">
-                <v-row i>
+                <v-row>
+                  <v-col v-if="post.is_private" cols="auto" class="my-auto mx-0 text-wrap">
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon small color="yellow accent-4" v-bind="attrs"
+                                v-on="on">mdi-shield-lock
+                        </v-icon>
+                      </template>
+                      <span>Private</span>
+                    </v-tooltip>
+
+                  </v-col>
                   <v-col class="ma-auto text-wrap">
                     {{ post.title }}
-                    <v-spacer/>
                   </v-col>
                   <v-col align="end" v-if="loggedIn" cols="auto">
-                    <v-btn icon
+                    <v-btn icon small
                            @click="editResource(post)"
                     >
                       <v-icon color="blue">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn icon
+                    <v-btn icon small
                            @click="deleteResource(post)"
                     >
                       <v-icon color="red">mdi-delete</v-icon>
@@ -60,9 +70,8 @@ import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import {Resource} from "@/types/posts/resource";
 import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
-import {deleteResource, PostResource} from "@/api/posts/resource";
+import {deleteResource} from "@/api/posts/resource";
 import Confirmation from "@/components/Confirmation.vue";
-import {RawLocation} from "vue-router";
 import {mapGetters} from "vuex";
 
 @Component({
@@ -96,8 +105,7 @@ export default class CategoryCard extends Vue {
   }
 
   editResource(post: Resource): void {
-    const postResource = (Object.assign(post, {category: post.post_category})) as PostResource;
-    this.$router.replace({name: "New Post", params: {resource: JSON.stringify(postResource)}});
+    this.$router.replace({name: "New Post", params: {resource: JSON.stringify(post)}});
   }
 }
 </script>

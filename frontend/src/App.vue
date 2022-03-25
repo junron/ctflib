@@ -69,6 +69,9 @@ export default class App extends Vue {
 
   get displayableRoutes(): RouteConfig[] {
     return this.$router.options.routes?.filter(route => {
+      if(route.meta && route.meta.show == false) {
+        return false;
+      }
       if (this.loggedIn) {
         return route.path !== "/login";
       }

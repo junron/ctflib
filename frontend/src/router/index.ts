@@ -5,6 +5,7 @@ import Login from "@/views/Login.vue";
 import CTFListing from "@/views/CTFListing.vue";
 import Contact from "@/views/Contact.vue";
 import NewPost from "@/views/NewPost.vue";
+import ChallengeListing from "@/views/ChallengeListing.vue";
 
 Vue.use(VueRouter);
 
@@ -36,6 +37,14 @@ const routes: Array<RouteConfig> = [
     props: true,
     meta: {
       requiresAuth: true,
+    },
+  },
+  {
+    path: "/ctfs/:id",
+    name: "CTF",
+    component: ChallengeListing,
+    meta: {
+      show: false,
     },
   },
 ];

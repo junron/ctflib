@@ -25,9 +25,8 @@
       <slot name="actions">
         <v-col align="center"
                justify="center">
-          <!--  TODO -->
           <a class="title-link"
-             href="https://github.com" target="_blank">
+             :href="'#/ctfs/'+ctfEvent.event_id">
             Challenges
           </a>
         </v-col>

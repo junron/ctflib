@@ -57,9 +57,8 @@
         <v-divider vertical/>
         <v-col align="center"
                justify="center">
-          <!--  TODO -->
           <a class="title-link"
-             href="https://github.com" target="_blank">
+             :href="'#/ctfs/'+ctftimeEvent.event_id">
             Challenges
           </a>
         </v-col>

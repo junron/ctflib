@@ -5,7 +5,7 @@ import challengeRouter from "./challenge";
 const router = require('express').Router();
 
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const includeCTFTime = !!req.params.includeCTFTime;
+  const includeCTFTime = !!req.query.includeCTFTime;
   return res.success("", await CTF.getCTFs(includeCTFTime));
 });
 
