@@ -14,6 +14,8 @@ import resourceRoute from "./routes/resource";
 import tagsRoute from "./routes/tags";
 import ctfRoute from "./routes/ctf/ctf";
 import ctftimeRoute from "./routes/ctf/ctftime";
+import shareRoute from "./routes/share";
+
 
 const app = express();
 
@@ -50,6 +52,10 @@ const app = express();
 
   app.use("/ctfs", ctfRoute);
   app.use("/ctftime", ctftimeRoute);
+
+  app.use("/share", shareRoute);
+
+
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {
     res.send("Hello World!");

@@ -30,7 +30,6 @@
                   Math.floor(categories.length/2) * idx)"
                      :key="category.name">
                 {{ challenges.filter(challenge => challenge.category_name === category.name).length }}
-                &nbsp;
                 <v-icon :class="effectiveColor(category)">mdi-{{ category.icon }}</v-icon>
 
               </v-col>
