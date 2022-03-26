@@ -21,7 +21,7 @@ export interface State {
 export default new Vuex.Store<State>({
   state: {
     name: null,
-    darkMode: false,
+    darkMode: true,
     categories: [],
     anonymous: false,
   },
