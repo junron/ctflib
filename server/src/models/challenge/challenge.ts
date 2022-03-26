@@ -76,8 +76,8 @@ export class Challenge {
                 left join external_writeup ew on writeup.writeup_id = ew.external_writeup_id
                 left join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
        where writeup.challenge_id = ?
-           and is_private = FALSE
-          or ? = TRUE`,
+           and (is_private = FALSE
+          or ? = TRUE)`,
       [this.challenge_id, auth]);
     return plainToInstance(Writeup, writeups, {exposeDefaultValues: true});
   }

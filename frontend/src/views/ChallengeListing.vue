@@ -81,12 +81,11 @@
                   :content="challenge.description"
                   class="ma-4"/>
               <v-divider/>
-              <v-row class="ma-4" v-if="getChallengeWriteups(challenge).length">
+              <v-row class="ma-4">
                 <!-- Internal writeups -->
                 <v-chip-group column>
                   <v-chip
                       label
-                      input-value="111"
                       dark
                       v-for="writeup in getChallengeWriteups(challenge).filter(w=>!w.url)"
                       color="deep-purple darken-3"
@@ -96,10 +95,19 @@
                   >
                     Writeup by {{ writeup.poster_username }}
                   </v-chip>
+                  <v-chip
+                      label
+                      dark
+                      v-if="loggedIn && getChallengeWriteups(challenge).filter(w=>!w.url).length === 0"
+                      color="deep-purple darken-3"
+                      link
+                      :href="`/#/ctfs/${challenge.event_id}/challenges/${challenge.challenge_id}/writeup/new`">
+                    <v-icon>mdi-plus</v-icon>
+                    Add writeup
+                  </v-chip>
                   <!-- External writeups -->
                   <v-chip
                       label
-                      input-value="111"
                       dark
                       v-for="writeup in getChallengeWriteups(challenge).filter(w=>w.url)"
                       color="pink darken-3"
@@ -137,7 +145,7 @@ import {getWriteupsForChallenge} from "@/api/writeup";
 @Component({
   name: "ChallengeListing",
   components: {MarkdownRenderer},
-  computed: mapGetters(["categories"]),
+  computed: mapGetters(["categories", "loggedIn"]),
   mounted() {
     getCTFs(true).then((ctfs) => {
       this.$data.ctf = ctfs.filter(ctf => ctf.event_id == (this as ChallengeListing).getCTFId())[0];
@@ -149,6 +157,7 @@ import {getWriteupsForChallenge} from "@/api/writeup";
 })
 export default class ChallengeListing extends Vue {
   private categories!: Category[]
+  private loggedIn!: boolean
   private ctf: CTFEvent | null = null;
   private challenges: Challenge[] = [];
   private writeups: { challengeID: number, writeups: Writeup[] }[] = [];

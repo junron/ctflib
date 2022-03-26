@@ -39,7 +39,7 @@ router.get("/writeup/:writeup_slug", async (req: Request, res: Response, next: N
     <meta property="og:description" content="${filteredDescription}">
     <meta property="og:author" content="${filteredAuthor}">
     <script>
-        location.href = "/#/writeups/${challenge.event_id}/${challenge.challenge_id}/${writeup.writeup_id}";
+        location.href = "https://ctflib.junron.dev/#/writeups/${challenge.event_id}/${challenge.challenge_id}/${writeup.writeup_id}";
     </script>
 `;
   return res.send(response);

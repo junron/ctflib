@@ -9,8 +9,9 @@
         <v-tab key="preview">Preview</v-tab>
       </v-tabs>
     </v-row>
-    <v-row class="my-8">
+    <v-row class="mt-8">
       <v-textarea
+          auto-grow
           ref="textarea"
           v-if="tab === 0"
           v-model="localContent"
@@ -22,6 +23,7 @@
       />
       <MarkdownRenderer
           v-else
+          :max-width="maxWidth"
           :content="localContent"/>
     </v-row>
   </v-container>
@@ -34,7 +36,6 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
-import Confirmation from "@/components/Confirmation.vue";
 import {VTextarea} from "vuetify/lib/components";
 import {upload} from "@/api/upload";
 
@@ -51,6 +52,7 @@ export default class MarkdownEditor extends Vue {
   @Prop() public content!: string;
   @Prop() public label!: string;
   @Prop() public error!: string | null;
+  @Prop() public maxWidth?: string;
 
   tab = null;
 

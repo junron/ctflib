@@ -48,9 +48,18 @@ const routes: Array<RouteConfig> = [
       show: false,
     },
   },
-    {
+  // TODO: Refactor path?
+  {
     path: "/writeups/:eventID/:challengeID/:writeupID",
-    name: "CTF",
+    name: "View writeup",
+    component: WriteupDisplay,
+    meta: {
+      show: false,
+    },
+  },
+  {
+    path: "/ctfs/:eventID/challenges/:challengeID/writeup/new",
+    name: "Create writeup",
     component: WriteupDisplay,
     meta: {
       show: false,

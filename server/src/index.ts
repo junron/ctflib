@@ -51,6 +51,8 @@ const app = express();
   app.use("/tags", auth(false));
   app.use("/tags", tagsRoute);
 
+  app.use("/ctfs/get/:id/challenges/:chalID/writeups", auth(false));
+  app.use("/ctfs/get/:id/challenges/:chalID/writeups/create", auth(true));
   app.use("/ctfs", ctfRoute);
   app.use("/ctftime", ctftimeRoute);
 

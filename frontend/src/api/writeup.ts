@@ -1,4 +1,4 @@
-import {fetchJSON} from "@/api/index";
+import {fetchJSON, postJSON} from "@/api/index";
 import {Challenge} from "@/types/challenges/challenge";
 import {Writeup} from "@/types/writeup";
 
@@ -7,6 +7,16 @@ export async function getWriteupsForChallenge(challenge: Challenge): Promise<Wri
     `/ctfs/get/${challenge.event_id}/challenges/${challenge.challenge_id}/writeups`);
   if (!response.success) {
     throw new Error("Failed to fetch categories");
+  }
+  return response.data;
+}
+
+export async function createWriteup(challenge: Challenge, writeup: Writeup): Promise<Writeup> {
+  const response = await postJSON<Writeup>(
+    `/ctfs/get/${challenge.event_id}/challenges/${challenge.challenge_id}/writeups/create`,
+    writeup);
+  if (!response.success) {
+    throw new Error("Failed to create writeup");
   }
   return response.data;
 }

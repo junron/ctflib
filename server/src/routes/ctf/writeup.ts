@@ -1,7 +1,8 @@
 import {NextFunction, Request, Response} from "express";
-import {CTF} from "../../models/ctf/ctf";
 import {Challenge} from "../../models/challenge/challenge";
 import {Writeup} from "../../models/writeup";
+import {plainToInstance} from "class-transformer";
+import {validate} from "class-validator";
 
 const router = require('express').Router({mergeParams: true});
 
@@ -16,6 +17,33 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     res.success("Success", await challenge.getWriteups(req.auth));
   } else {
     res.failure("CTF not found", "id");
+  }
+});
+
+router.post("/create", async (req: Request, res: Response, next: NextFunction) => {
+  const writeup = plainToInstance(Writeup, req.body as Writeup, {exposeDefaultValues: true});
+  const user = req.user;
+  if (!user) {
+    return res.failure("You must be logged in");
+  }
+  writeup.poster_username = user.username;
+  const errors = await validate(writeup);
+  if (errors.length == 0) {
+    const id = parseInt(req.params.chalID);
+    if (isNaN(id)) {
+      res.failure("Invalid ID", "id");
+      return;
+    }
+    const challenge = await Challenge.getChallengeByID(id);
+    if (challenge) {
+      writeup.challenge_id = challenge.challenge_id;
+      await writeup.createWithTransaction();
+      return res.success("Writeup created", writeup);
+    } else {
+      res.failure("CTF not found", "id");
+    }
+  } else {
+    return res.validationFailure(errors);
   }
 });
 

@@ -43,4 +43,32 @@ export class Writeup {
     }
     return plainToInstance(Writeup, writeups[0], {exposeDefaultValues: true});
   }
+
+  async createWithTransaction() {
+    const connection = await getConnection();
+    await connection.beginTransaction();
+    try {
+      await connection.execute<RowDataPacket[]>(
+        `INSERT INTO writeup (challenge_id, poster_username, is_private)
+         VALUES (?, ?, ?)`,
+        [this.challenge_id, this.poster_username, this.is_private]);
+      const [lastID] = await connection.execute<RowDataPacket[]>("SELECT LAST_INSERT_ID() as id");
+      this.writeup_id = lastID[0].id;
+      if (this.url) {
+        await connection.query(
+          `INSERT INTO external_writeup (external_writeup_id, url)
+           VALUES (?, ?)`,
+          [this.writeup_id, this.url]);
+      } else if (this.body) {
+        await connection.query(
+          `INSERT INTO internal_writeup (internal_writeup_id, body)
+           VALUES (?, ?)`,
+          [this.writeup_id, this.body]);
+      }
+      await connection.commit();
+    } catch (e) {
+      await connection.rollback();
+      throw e;
+    }
+  }
 }
