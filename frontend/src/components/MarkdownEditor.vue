@@ -11,12 +11,14 @@
     </v-row>
     <v-row class="my-8">
       <v-textarea
+          ref="textarea"
           v-if="tab === 0"
           v-model="localContent"
           :label="label"
           @input="onInput"
           :error-messages="localError"
           :rules="[v => !!v || label + ' is required']"
+          @drop="onDrop"
       />
       <MarkdownRenderer
           v-else
@@ -32,6 +34,9 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
+import Confirmation from "@/components/Confirmation.vue";
+import {VTextarea} from "vuetify/lib/components";
+import {upload} from "@/api/upload";
 
 @Component({
   name: "MarkdownEditor",
@@ -52,9 +57,34 @@ export default class MarkdownEditor extends Vue {
   localContent = this.content;
   localError = this.error ?? null;
 
+  $refs!: {
+    textarea: InstanceType<typeof VTextarea>;
+  }
+
   onInput(): void {
     this.localError = "";
     this.$emit("update:content", this.localContent);
+  }
+
+  onDrop(event: DragEvent): void {
+    const files = event.dataTransfer?.files;
+    if (!files || files.length != 1) return;
+    const textarea = this.$refs.textarea.$refs.input as HTMLTextAreaElement;
+    if (!textarea) return;
+    const selection = textarea.selectionStart;
+    const file = files[0];
+    this.localContent = this.localContent.slice(0, selection) + `\n![${file.name}](Uploading to imgur...)\n` + this.localContent.slice(selection);
+    upload(file).then(url => {
+      if (url.success) {
+        this.localContent = this.localContent.replace(
+            `![${file.name}](Uploading to imgur...)`, `![${file.name}](${url.data})`);
+      } else {
+        this.localContent = this.localContent.replace(
+            `\n![${file.name}](Uploading to imgur...)\n`, "");
+      }
+      this.onInput();
+    });
+    event.preventDefault();
   }
 }
 </script>

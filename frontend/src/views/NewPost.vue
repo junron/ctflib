@@ -105,7 +105,7 @@ export default class NewPost extends Vue {
     body: "",
     post_category: "",
     tags: [],
-    is_private: false,
+    is_private: true,
   }
 
   createResource(): void {

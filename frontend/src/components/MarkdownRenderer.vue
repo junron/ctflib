@@ -76,4 +76,9 @@ export default class MarkdownRenderer extends Vue {
   padding: 8px;
   margin: 8px 0 8px 0;
 }
+
+img {
+  object-fit: scale-down;
+  max-width: 100%;
+}
 </style>

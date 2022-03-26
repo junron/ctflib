@@ -15,6 +15,7 @@ import tagsRoute from "./routes/tags";
 import ctfRoute from "./routes/ctf/ctf";
 import ctftimeRoute from "./routes/ctf/ctftime";
 import shareRoute from "./routes/share";
+import uploadRoute from "./routes/upload";
 
 
 const app = express();
@@ -55,6 +56,8 @@ const app = express();
 
   app.use("/share", shareRoute);
 
+  app.use("/upload", auth(true));
+  app.use("/upload", uploadRoute);
 
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {
