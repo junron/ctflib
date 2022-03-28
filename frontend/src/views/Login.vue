@@ -19,7 +19,6 @@
         <v-tabs
             @change="reset"
             fixed-tabs
-            dark
             v-model="tab"
         >
           <v-tabs-slider/>
