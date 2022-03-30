@@ -31,6 +31,9 @@
       </v-btn>
     </v-app-bar>
 
+    <link v-if="!darkMode" rel="stylesheet" href="/github.css">
+
+
     <v-main>
       <router-view/>
     </v-main>
@@ -69,7 +72,7 @@ export default class App extends Vue {
 
   get displayableRoutes(): RouteConfig[] {
     return this.$router.options.routes?.filter(route => {
-      if(route.meta && route.meta.show == false) {
+      if (route.meta && route.meta.show == false) {
         return false;
       }
       if (this.loggedIn) {

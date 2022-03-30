@@ -11,7 +11,6 @@ import MarkdownIt, {Options} from "markdown-it/lib";
 import Renderer from "markdown-it/lib/renderer";
 import Token from "markdown-it/lib/token";
 import hljs from "highlight.js";
-import "highlight.js/styles/github-dark-dimmed.css";
 
 @Component({
   name: "MarkdownRender",
