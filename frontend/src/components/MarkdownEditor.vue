@@ -20,6 +20,7 @@
           :error-messages="localError"
           :rules="[v => !!v || label + ' is required']"
           @drop="onDrop"
+          @paste="onPaste"
       />
       <MarkdownRenderer
           v-else
@@ -71,10 +72,21 @@ export default class MarkdownEditor extends Vue {
   onDrop(event: DragEvent): void {
     const files = event.dataTransfer?.files;
     if (!files || files.length != 1) return;
+    this.handleAddFile(files[0]);
+    event.preventDefault();
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    const files = event.clipboardData?.files;
+    if (!files || files.length != 1) return;
+    this.handleAddFile(files[0]);
+    event.preventDefault();
+  }
+
+  handleAddFile(file: File): void {
     const textarea = this.$refs.textarea.$refs.input as HTMLTextAreaElement;
     if (!textarea) return;
     const selection = textarea.selectionStart;
-    const file = files[0];
     this.localContent = this.localContent.slice(0, selection) + `\n![${file.name}](Uploading to imgur...)\n` + this.localContent.slice(selection);
     upload(file).then(url => {
       if (url.success) {
@@ -86,7 +98,7 @@ export default class MarkdownEditor extends Vue {
       }
       this.onInput();
     });
-    event.preventDefault();
   }
+
 }
 </script>
