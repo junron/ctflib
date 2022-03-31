@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter, {Route as BaseRoute, RouteConfig} from "vue-router";
-import Home from "../views/Home.vue";
+import MainContent from "@/views/MainContent.vue";
 import Login from "@/views/Login.vue";
 import CTFListing from "@/views/CTFListing.vue";
 import Contact from "@/views/Contact.vue";
@@ -14,7 +14,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: MainContent,
   },
   {
     path: "/login",

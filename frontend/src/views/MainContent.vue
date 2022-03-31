@@ -1,6 +1,22 @@
 <template>
   <v-container>
-    <v-row class="my-4 px-3"><span class="text-h5">Hello, {{ name }}!</span></v-row>
+    <v-row class="my-4 px-3">
+      <span v-if='loggedIn' class="text-h5">
+        Hello, {{ name }}!
+      </span>
+      <v-row v-else class="my-4 ma-1">
+        <span class="text-h5 ma-auto">
+          Welcome to ctflib!
+        </span>
+        <v-spacer/>
+        <v-btn
+            color="primary"
+            dark
+            href="/#/login">
+          Sign in
+        </v-btn>
+      </v-row>
+    </v-row>
     <v-row class="my-8 px-3">
       <v-autocomplete
           :height="($vuetify.breakpoint.smAndDown)?'':'100px'"
@@ -75,7 +91,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {Prop} from "vue-property-decorator";
 import Component from "vue-class-component";
 import CategoryCard from "@/components/CategoryCard.vue";
 import {mapGetters} from "vuex";
@@ -89,15 +104,16 @@ import {effectiveColor} from "@/util";
   components: {
     CategoryCard,
   },
-  computed: mapGetters(["categories"]),
+  computed: mapGetters(["categories", "loggedIn", "name"]),
   mounted() {
     (this as MainContent).loadResources();
   },
 })
 export default class MainContent extends Vue {
-  @Prop() private name!: string;
   private query = "";
   categories!: Category[];
+  loggedIn!: boolean;
+  name!: string;
   resources: Resource[] = [];
 
   effectiveColor(category: Category): string {

@@ -26,7 +26,7 @@
       <v-btn icon @click="toggleTheme">
         <v-icon>mdi-brightness-6</v-icon>
       </v-btn>
-      <v-btn icon @click="logout">
+      <v-btn v-if="loggedIn" icon @click="logout">
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>
@@ -57,6 +57,8 @@ import {getCategories} from "@/api/category";
       if (response.success) {
         this.$store.dispatch("login", response.data.username);
       } else {
+        // Already logged out
+        if (response.message === "No token provided") return;
         this.logout();
       }
     });
@@ -90,6 +92,7 @@ export default class App extends Vue {
   logout(): void {
     this.$store.dispatch("logout");
     logout();
+    location.reload();
   }
 }
 </script>
