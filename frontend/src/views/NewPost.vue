@@ -15,19 +15,23 @@
             ref="form"
             v-model="valid"
         >
-          <v-row class="mx-1">
-            <v-text-field
-                class="mr-8 my-4"
-                v-model="localResource.title"
-                label="Title"
-                @input="errors['title'] = ''; success = false"
-                :error-messages="errors['title']"
-                :rules="[v => !!v || 'Title is required']"
-            />
-            <v-switch
-                v-model="localResource.is_private"
-                label="Private"
-            />
+          <v-row>
+            <v-col>
+              <v-text-field
+                  class="mr-8 my-4"
+                  v-model="localResource.title"
+                  label="Title"
+                  @input="errors['title'] = ''; success = false"
+                  :error-messages="errors['title']"
+                  :rules="[v => !!v || 'Title is required']"
+              />
+            </v-col>
+            <v-col cols="auto" class="ma-auto">
+              <v-switch
+                  v-model="localResource.is_private"
+                  label="Private"
+              />
+            </v-col>
           </v-row>
           <MarkdownEditor
               max-width="500px"
@@ -100,7 +104,7 @@ export default class NewPost extends Vue {
   // Passed in as a string because vue router
   @Prop() public resource!: string | null;
 
-  private localResource:  Resource = this.$props.resource ? JSON.parse(this.$props.resource) : {
+  private localResource: Resource = this.$props.resource ? JSON.parse(this.$props.resource) : {
     title: "",
     body: "",
     post_category: "",

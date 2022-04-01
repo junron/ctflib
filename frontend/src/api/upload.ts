@@ -1,7 +1,7 @@
-import {Response} from "@/types/response";
+import {APIResponse} from "@/types/APIResponse";
 import {apiRoot} from "@/api/index";
 
-export async function upload(file: File): Promise<Response<string>> {
+export async function upload(file: File): Promise<APIResponse<string>> {
   const formData = new FormData();
   formData.append("file", file);
   return fetch(apiRoot + "/upload", {

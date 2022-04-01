@@ -20,9 +20,14 @@ router.get("/:fileID", async (req: Request, res: Response, next: NextFunction) =
   }
   const file = await ChallengeFile.getFileByID(id);
   if (file) {
-    res.setHeader('Content-disposition', 'attachment; filename=' + file.file_name);
-    res.contentType(file.file_type);
-    fs.createReadStream(path.join("./",file.file_path)).pipe(res);
+    const filePath = path.join("./", file.file_path);
+    if (fs.existsSync(filePath)) {
+      res.setHeader('Content-disposition', 'attachment; filename=' + file.file_name);
+      res.contentType(file.file_type);
+      fs.createReadStream(filePath).pipe(res);
+    } else {
+      res.failure("File not found", "file");
+    }
   } else {
     res.failure("File not found", "id");
   }

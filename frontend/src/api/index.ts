@@ -1,10 +1,10 @@
-import {Response} from "@/types/response";
+import {APIResponse} from "@/types/APIResponse";
 
 export const apiRoot = location.hostname == "localhost"
   ? location.origin
   : "https://api.ctflib.junron.dev";
 
-export function postJSON<T>(path: string, data: any): Promise<Response<T>> {
+export function postJSON<T>(path: string, data: any): Promise<APIResponse<T>> {
   return fetch(apiRoot + path, {
     method: "POST",
     headers: {
@@ -16,7 +16,7 @@ export function postJSON<T>(path: string, data: any): Promise<Response<T>> {
 }
 
 
-export function fetchJSON<T>(path: string): Promise<Response<T>> {
+export function fetchJSON<T>(path: string): Promise<APIResponse<T>> {
   return fetch(apiRoot + path, {
     method: "GET",
     credentials: "include",

@@ -7,6 +7,7 @@ import Contact from "@/views/Contact.vue";
 import NewPost from "@/views/NewPost.vue";
 import ChallengeListing from "@/views/ChallengeListing.vue";
 import WriteupDisplay from "@/views/WriteupDisplay.vue";
+import NewChallenge from "@/views/NewChallenge.vue";
 
 Vue.use(VueRouter);
 
@@ -61,6 +62,14 @@ const routes: Array<RouteConfig> = [
     path: "/ctfs/:eventID/challenges/:challengeID/writeup/new",
     name: "Create writeup",
     component: WriteupDisplay,
+    meta: {
+      show: false,
+    },
+  },
+  {
+    path: "/ctfs/:eventID/challenges/new",
+    name: "Create challenge",
+    component: NewChallenge,
     meta: {
       show: false,
     },

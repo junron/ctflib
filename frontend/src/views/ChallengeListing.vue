@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card elevation="8" class="my-8">
+    <v-card class="my-8 px-4">
       <v-row>
         <v-col>
           <v-card-title v-if="ctf">
@@ -21,24 +21,34 @@
             </v-row>
           </v-card-text>
         </v-col>
-        <v-spacer/>
-        <v-col>
-          <v-card-text>
-            <v-row v-for="idx in 2" :key="idx">
-              <v-col v-for="category in sortedCategories().slice(
-                  Math.floor(categories.length/2) * (idx-1),
-                  Math.floor(categories.length/2) * idx)"
-                     :key="category.name">
-                {{ challenges.filter(challenge => challenge.category_name === category.name).length }}
-                <v-icon :class="effectiveColor(category)">mdi-{{ category.icon }}</v-icon>
-
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-col>
       </v-row>
     </v-card>
-    <v-card v-for="category in sortedCategoriesWithChallenges()" :key="category.name">
+    <v-card class="mt-8 mb-6 px-4" v-if="ctf">
+      <v-card-text>
+        <v-row>
+          <v-col
+              class="ma-auto"
+              cols="auto"
+              v-for="category in sortedCategories()"
+              :key="category.name">
+            {{ challenges.filter(challenge => challenge.category_name === category.name).length }}
+            <v-icon :class="effectiveColor(category)">mdi-{{ category.icon }}</v-icon>
+          </v-col>
+          <v-spacer/>
+          <v-col cols="auto">
+            <v-btn
+                link
+                :href="`#/ctfs/${ctf.event_id}/challenges/new`"
+                color="primary" v-if="loggedIn">
+              <v-icon>mdi-plus</v-icon>&nbsp; Add challenge
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+    <v-card
+        class="px-4"
+        v-for="category in sortedCategoriesWithChallenges()" :key="category.name">
       <v-card-title>
         <v-icon :class="effectiveColor(category) + ' mr-4' ">mdi-{{ category.icon }}</v-icon>
         {{ category.name }}
@@ -80,11 +90,11 @@
                   max-width="'100%'"
                   :content="challenge.description"
                   class="ma-4"/>
-                <span class="ma-4" v-for="file in challenge.files" :key="file.file_id">
+              <span class="ma-4" v-for="file in challenge.files" :key="file.file_id">
                   <a :href="fileURL(file.file_id)">
                     {{ file.file_name }}
                   </a>
-                </span>
+              </span>
               <v-divider/>
               <v-row class="ma-4">
                 <!-- Internal writeups -->
