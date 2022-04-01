@@ -16,6 +16,7 @@ import ctfRoute from "./routes/ctf/ctf";
 import ctftimeRoute from "./routes/ctf/ctftime";
 import shareRoute from "./routes/share";
 import uploadRoute from "./routes/upload";
+import serveRoute from "./routes/serve";
 
 
 const app = express();
@@ -53,6 +54,7 @@ const app = express();
 
   app.use("/ctfs/get/:id/challenges/:chalID/writeups", auth(false));
   app.use("/ctfs/get/:id/challenges/:chalID/writeups/create", auth(true));
+  app.use("/ctfs/get/:id/challenges/create", auth(true));
   app.use("/ctfs", ctfRoute);
   app.use("/ctftime", ctftimeRoute);
 
@@ -60,6 +62,7 @@ const app = express();
 
   app.use("/upload", auth(true));
   app.use("/upload", uploadRoute);
+  app.use("/files", serveRoute);
 
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {

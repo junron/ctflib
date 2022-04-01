@@ -80,6 +80,11 @@
                   max-width="'100%'"
                   :content="challenge.description"
                   class="ma-4"/>
+                <span class="ma-4" v-for="file in challenge.files" :key="file.file_id">
+                  <a :href="fileURL(file.file_id)">
+                    {{ file.file_name }}
+                  </a>
+                </span>
               <v-divider/>
               <v-row class="ma-4">
                 <!-- Internal writeups -->
@@ -141,6 +146,7 @@ import {effectiveColor} from "@/util";
 import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
 import {Writeup} from "@/types/writeup";
 import {getWriteupsForChallenge} from "@/api/writeup";
+import {apiRoot} from "@/api";
 
 @Component({
   name: "ChallengeListing",
@@ -166,7 +172,7 @@ export default class ChallengeListing extends Vue {
     return parseInt(this.$route.params.id);
   }
 
-  fetchChallengeWriteups(challenge: Challenge) : void{
+  fetchChallengeWriteups(challenge: Challenge): void {
     if (this.getChallengeWriteups(challenge).length > 0) {
       return;
     }
@@ -206,6 +212,10 @@ export default class ChallengeListing extends Vue {
 
   effectiveColor(category: Category): string {
     return effectiveColor(category, this.$vuetify.theme.dark);
+  }
+
+  fileURL(id: number): string {
+    return apiRoot + "/files/" + id;
   }
 }
 </script>
