@@ -133,14 +133,26 @@
                   >
                     External writeup
                   </v-chip>
+                  <v-chip
+                      label
+                      dark
+                      v-if="loggedIn && getChallengeWriteups(challenge).filter(w=>w.url).length === 0"
+                      color="pink darken-3"
+                      @click="newExtWriteup(challenge)">
+                    <v-icon>mdi-plus</v-icon>
+                    Add external writeup
+                  </v-chip>
                 </v-chip-group>
-
               </v-row>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
       </v-card-text>
     </v-card>
+    <ExternalWriteupInput
+        ref="extWriteupInput"
+        max-width="498px"
+    />
   </v-container>
 </template>
 
@@ -155,12 +167,13 @@ import {Category} from "@/types/category";
 import {effectiveColor} from "@/util";
 import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
 import {Writeup} from "@/types/writeup";
-import {getWriteupsForChallenge} from "@/api/writeup";
+import {createWriteup, getWriteupsForChallenge} from "@/api/writeup";
 import {apiRoot} from "@/api";
+import ExternalWriteupInput from "@/components/ExternalWriteupInput.vue";
 
 @Component({
   name: "ChallengeListing",
-  components: {MarkdownRenderer},
+  components: {ExternalWriteupInput, MarkdownRenderer},
   computed: mapGetters(["categories", "loggedIn"]),
   mounted() {
     getCTFs(true).then((ctfs) => {
@@ -176,7 +189,28 @@ export default class ChallengeListing extends Vue {
   private loggedIn!: boolean
   private ctf: CTFEvent | null = null;
   private challenges: Challenge[] = [];
-  private writeups: { challengeID: number, writeups: Writeup[] }[] = [];
+  private writeups: Writeup[] = [];
+
+  $refs!: {
+    extWriteupInput: ExternalWriteupInput
+  }
+
+  newExtWriteup(challenge: Challenge) : void{
+    this.$refs.extWriteupInput.open(challenge.name).then((url) => {
+      if (url) {
+        const writeup: Writeup = {
+          writeup_id: -1,
+          challenge_id: challenge.challenge_id,
+          url: url,
+          poster_username: "User",
+          is_private: false,
+        };
+        createWriteup(challenge, writeup).then((createdWriteup) => {
+          this.writeups.push(createdWriteup);
+        });
+      }
+    });
+  }
 
   getCTFId(): number {
     return parseInt(this.$route.params.id);
@@ -187,19 +221,16 @@ export default class ChallengeListing extends Vue {
       return;
     }
     getWriteupsForChallenge(challenge).then((writeups) => {
-      this.writeups.push({
-        challengeID: challenge.challenge_id,
-        writeups: writeups,
-      });
+      writeups.forEach(writeup=>this.writeups.push(writeup));
     });
   }
 
   getChallengeWriteups(challenge: Challenge): Writeup[] {
-    const challengeWriteups = this.writeups.find(chal => chal.challengeID === challenge.challenge_id);
+    const challengeWriteups = this.writeups.filter(writeup => writeup.challenge_id === challenge.challenge_id);
     if (!challengeWriteups) {
       return [];
     }
-    return challengeWriteups.writeups;
+    return challengeWriteups;
   }
 
   sortedCategories(): Category[] {

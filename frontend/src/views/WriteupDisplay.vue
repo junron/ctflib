@@ -61,7 +61,7 @@
         <v-switch
             v-if="editing()"
             v-model="is_private"
-            label="This writeup is private"
+            label="Make this writeup private"
         />
         <markdown-editor
             v-if="editing()"
