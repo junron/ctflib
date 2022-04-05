@@ -1,5 +1,4 @@
 import {NextFunction, Request, Response} from "express";
-import {CTF} from "../../models/ctf/ctf";
 import {CTFTimeEvent} from "../../models/ctf/ctftimeEvent";
 
 const router = require('express').Router();

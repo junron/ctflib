@@ -8,6 +8,7 @@ import NewPost from "@/views/NewPost.vue";
 import ChallengeListing from "@/views/ChallengeListing.vue";
 import WriteupDisplay from "@/views/WriteupDisplay.vue";
 import NewChallenge from "@/views/NewChallenge.vue";
+import NewCTF from "@/views/NewCTF.vue";
 
 Vue.use(VueRouter);
 
@@ -39,6 +40,14 @@ const routes: Array<RouteConfig> = [
     props: true,
     meta: {
       requiresAuth: true,
+    },
+  },
+  {
+    path: "/ctfs/new",
+    name: "Create CTF",
+    component: NewCTF,
+    meta: {
+      show: false,
     },
   },
   {

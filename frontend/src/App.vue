@@ -91,8 +91,9 @@ export default class App extends Vue {
 
   logout(): void {
     this.$store.dispatch("logout");
-    logout();
-    location.reload();
+    logout().then(() => {
+      location.reload();
+    });
   }
 }
 </script>
