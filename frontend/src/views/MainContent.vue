@@ -18,16 +18,13 @@
       </v-row>
     </v-row>
     <v-row class="my-8 px-3">
-      <v-autocomplete
+      <v-text-field
           :height="($vuetify.breakpoint.smAndDown)?'':'100px'"
           :class="['search-field', ($vuetify.breakpoint.smAndDown) ? 'text-h5' : 'text-h4']"
           filled
           outlined
           label="What do you want to know?"
-          :items="[]"
-          :search-input.sync="query"
-
-          no-data-text="No posts found :("
+          v-model="query"
       >
         <template v-slot:item="{ item}">
           <v-list-item-icon>
@@ -47,7 +44,7 @@
             </v-chip>
           </v-chip-group>
         </template>
-      </v-autocomplete>
+      </v-text-field>
     </v-row>
     <!-- Major categories   -->
     <v-row>
@@ -96,7 +93,7 @@ import CategoryCard from "@/components/CategoryCard.vue";
 import {mapGetters} from "vuex";
 import {Category} from "@/types/category";
 import {Resource} from "@/types/posts/resource";
-import {getResources} from "@/api/posts/resource";
+import {getResources, searchResources} from "@/api/posts/resource";
 import {effectiveColor} from "@/util";
 
 @Component({
@@ -107,6 +104,12 @@ import {effectiveColor} from "@/util";
   computed: mapGetters(["categories", "loggedIn", "name"]),
   mounted() {
     (this as MainContent).loadResources();
+  },
+  watch: {
+    query(newQuery: string) {
+      console.log(newQuery);
+      (this as MainContent).loadResources();
+    },
   },
 })
 export default class MainContent extends Vue {
@@ -121,9 +124,16 @@ export default class MainContent extends Vue {
   }
 
   loadResources(): void {
-    getResources().then(resources => {
-      this.$data.resources = resources;
-    });
+    if (this.query.trim().length > 0) {
+      searchResources(this.query).then(resources => {
+        this.resources = resources;
+      });
+    } else {
+      getResources().then(resources => {
+        this.$data.resources = resources;
+      });
+    }
+
   }
 
   openPage(url: string): void {

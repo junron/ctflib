@@ -77,13 +77,17 @@ export class Resource extends Post {
 
   static async search(query: string, auth: boolean) {
     const connection = await getConnection();
-    const queryString = `SELECT post.*
-                         FROM post,
-                              resource
+    const queryString = `SELECT post.*, r.body
+                         FROM post
+                                  inner join resource r on post.post_id = r.resource_id
+                                  left join post_tag on post_tag.post_id = post.post_id
                          WHERE (is_private = false OR ? = true)
-                           AND (title LIKE ? OR post_category LIKE ? OR body LIKE ?)
-                           AND post_id = resource_id`;
-    const [rows] = await connection.execute<RowDataPacket[]>(queryString, [auth, `%${query}%`, `%${query}%`, `%${query}%`]);
+                           AND (title LIKE ?
+                             OR post_category LIKE ?
+                             OR body LIKE ?
+                             OR tag_name LIKE ?)
+                         group by post.post_id;`;
+    const [rows] = await connection.execute<RowDataPacket[]>(queryString, [auth, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]);
     return plainToInstance(Resource, Post.getTags<Resource>(rows as Resource[]));
   }
 

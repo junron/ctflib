@@ -7,6 +7,12 @@ export async function getResources(): Promise<Resource[]> {
   return response.data;
 }
 
+export async function searchResources(query: string): Promise<Resource[]> {
+  const response = await fetchJSON<Resource[]>("/resources/search?q=" + query);
+  return response.data;
+}
+
+
 export async function createResource(resource: Resource): Promise<APIResponse<Resource>> {
   return postJSON<Resource>("/resources/create", resource);
 }
@@ -19,5 +25,5 @@ export async function deleteResource(resourceId: number): Promise<APIResponse<nu
 }
 
 export async function editResource(resource: Resource): Promise<APIResponse<Resource>> {
-  return postJSON<Resource>("/resources/edit/"+resource.post_id, resource);
+  return postJSON<Resource>("/resources/edit/" + resource.post_id, resource);
 }

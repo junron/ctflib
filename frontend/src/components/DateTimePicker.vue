@@ -25,7 +25,7 @@
           >
             <v-row>
               <v-spacer/>
-              <v-col class="ma-auto">
+              <v-col>
                 <v-date-picker
                     :min="getDateTimeStrings(after)[0]"
                     :max="getDateTimeStrings(before)[0]"
@@ -34,6 +34,7 @@
               <v-col class="ma-auto">
                 <v-time-picker
                     v-model="localTimeString"
+                    ampm-in-title
                     :min="localDateString===getDateTimeStrings(after)[0] ? getDateTimeStrings(after)[1]: null"
                     :max="localDateString===getDateTimeStrings(before)[0] ? getDateTimeStrings(before)[1]: null"
                 />

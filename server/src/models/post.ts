@@ -3,7 +3,6 @@ import {RowDataPacket} from "mysql2";
 import {Expose} from "class-transformer";
 import {IsBoolean, IsNumber, IsString} from "class-validator";
 import {Connection} from "mysql2/promise";
-import post from "../routes/post";
 
 export class Post {
   @Expose()
@@ -63,7 +62,7 @@ export class Post {
   }
 
   static async getTags<T extends Post>(posts: T[]): Promise<T[]> {
-    if (post.length == 0) {
+    if (posts.length == 0) {
       return posts;
     }
     const connection = await getConnection();
