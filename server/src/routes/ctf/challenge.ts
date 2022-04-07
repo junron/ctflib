@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {CTF} from "../../models/ctf/ctf";
 import {Challenge} from "../../models/challenge/challenge";
-import writeupRouter from "./writeup";
 import {plainToInstance} from "class-transformer";
 import {validate} from "class-validator";
 import multer from "multer";
@@ -39,6 +38,9 @@ router.post("/create", upload.array("files"), async (req: Request, res: Response
   if (req.body.points && typeof req.body.points == "string") {
     req.body.points = parseInt(req.body.points);
   }
+  if(req.body.tags && typeof req.body.tags == "string") {
+    req.body.tags = req.body.tags.split(",");
+  }
   const challenge = plainToInstance(Challenge, req.body as Challenge, {exposeDefaultValues: true});
   const errors = await validate(challenge);
   if (errors.length == 0) {
@@ -54,6 +56,20 @@ router.post("/create", upload.array("files"), async (req: Request, res: Response
   }
 });
 
-router.use("/:chalID/writeups", writeupRouter);
+
+
+router.get("/:chalID/writeups", async (req: Request, res: Response, next: NextFunction) => {
+  const id = parseInt(req.params.chalID);
+  if (isNaN(id)) {
+    res.failure("Invalid ID", "id");
+    return;
+  }
+  const challenge = await Challenge.getChallengeByID(id);
+  if (challenge) {
+    res.success("Success", await challenge.getWriteups(req.auth));
+  } else {
+    res.failure("CTF not found", "id");
+  }
+});
 
 export default router;

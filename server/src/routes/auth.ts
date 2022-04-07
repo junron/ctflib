@@ -15,7 +15,8 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
   if (user.login(password)) {
     res.cookie("token", user.getJWT(), {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: "strict",
     });
     res.success("Logged in successfully", user.withoutHash());
   } else {

@@ -2,11 +2,6 @@ import {Resource} from "@/types/posts/resource";
 import {apiRoot, fetchJSON, postJSON} from "@/api";
 import {APIResponse} from "@/types/APIResponse";
 
-export async function getResources(): Promise<Resource[]> {
-  const response = await fetchJSON<Resource[]>("/resources");
-  return response.data;
-}
-
 export async function searchResources(query: string): Promise<Resource[]> {
   const response = await fetchJSON<Resource[]>("/resources/search?q=" + query);
   return response.data;

@@ -46,8 +46,8 @@ export class Writeup {
                 left join external_writeup ew on writeup.writeup_id = ew.external_writeup_id
                 left join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
        where writeup.writeup_id = ?
-           and is_private = FALSE
-          or ? = TRUE`,
+         and (is_private = FALSE
+           or ? = TRUE)`,
       [id, auth]);
     if (writeups.length === 0) {
       throw new Error("Writeup not found");
@@ -122,5 +122,51 @@ export class Writeup {
           .map(tag => tag.tag_name)
       });
     });
+  }
+
+  async deleteWriteup() {
+    const connection = await getConnection();
+    await connection.beginTransaction();
+    try {
+      await connection.query(
+        `DELETE
+         FROM internal_writeup
+         WHERE internal_writeup_id = ?`,
+        [this.writeup_id]);
+      await connection.query(
+        `DELETE
+         FROM external_writeup
+         WHERE external_writeup_id = ?`,
+        [this.writeup_id]);
+      await connection.query(
+        `DELETE
+         FROM writeup
+         WHERE writeup_id = ?`,
+        [this.writeup_id]);
+      await connection.commit();
+    } catch (e) {
+      await connection.rollback();
+      throw e;
+    }
+  }
+
+  async editWriteup(newWriteup: Writeup) {
+    const connection = await getConnection();
+    await connection.beginTransaction();
+    try {
+      await connection.query("UPDATE writeup SET is_private = ? WHERE writeup_id = ?",
+        [newWriteup.is_private, this.writeup_id]);
+      if (newWriteup.url) {
+        await connection.query("UPDATE external_writeup SET url = ? WHERE external_writeup_id = ?",
+          [newWriteup.url, this.writeup_id]);
+      } else if(newWriteup.body){
+        await connection.query("UPDATE internal_writeup SET body = ? WHERE internal_writeup_id = ?",
+          [newWriteup.body, this.writeup_id]);
+      }
+      await connection.commit();
+    } catch (e) {
+      await connection.rollback();
+      throw e;
+    }
   }
 }

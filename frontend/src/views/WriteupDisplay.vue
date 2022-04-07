@@ -1,5 +1,5 @@
 <template>
-  <v-container style="max-width: 960px">
+  <v-container :style="tab!==2 ? {'max-width': '960px'} : null">
     <v-card elevation="8" class="my-8">
       <v-row>
         <v-col class="mx-8">
@@ -35,11 +35,26 @@
         </v-col>
         <v-spacer/>
         <v-col
-            v-if="!editing()"
             class="mx-6 my-4" cols="auto"
-            @click="share()"
         >
-          <v-btn icon>
+          <v-btn icon small
+                 v-if="loggedIn && !newWriteup()"
+                 :disabled="editingWriteup"
+                 @click="editingWriteup = true; content= writeup.body"
+          >
+            <v-icon color="blue">mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn icon small
+                 v-if="loggedIn && !newWriteup()"
+                 :disabled="editingWriteup"
+                 @click="deleteWriteup()"
+          >
+            <v-icon color="red">mdi-delete</v-icon>
+          </v-btn>
+          <v-btn icon
+                 v-if="!newWriteup()"
+                 @click="share()"
+          >
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
         </v-col>
@@ -59,29 +74,41 @@
     <v-card elevation="8" v-if="challenge">
       <div class="pa-12" style="line-height: 2">
         <v-switch
-            v-if="editing()"
+            v-if="newWriteup() || editingWriteup"
             v-model="is_private"
             label="Make this writeup private"
         />
         <markdown-editor
-            v-if="editing()"
+            @changeTab="t=>this.tab = t"
+            enable-split="true"
+            v-if="newWriteup() || editingWriteup"
             :content.sync="content"
             max-width="100%"
             label="Writeup"
         />
         <markdown-renderer
-            v-if="writeup"
+            v-if="writeup && !editingWriteup"
             max-width="100%"
             :content="writeup.body"
         />
-        <v-btn v-if="editing()"
+        <v-btn v-if="newWriteup()"
                color="success"
                @click="createWriteup()"
                :disabled="content.length === 0">
           Create writeup!
         </v-btn>
+        <v-btn v-if="editingWriteup"
+               color="primary"
+               @click="editWriteup()"
+               :disabled="content.length === 0">
+          Save writeup!
+        </v-btn>
       </div>
     </v-card>
+    <confirmation
+        ref="confirmation"
+        :max-width="'500px'"
+    />
   </v-container>
 </template>
 
@@ -96,14 +123,15 @@ import {Category} from "@/types/category";
 import {effectiveColor} from "@/util";
 import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
 import {Writeup} from "@/types/writeup";
-import {createWriteup, getWriteupsForChallenge} from "@/api/writeup";
+import {createWriteup, deleteWriteup, editWriteup, getWriteupsForChallenge} from "@/api/writeup";
 import {apiRoot} from "@/api";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
+import Confirmation from "@/components/Confirmation.vue";
 
 @Component({
   name: "WriteupDisplay",
-  components: {MarkdownEditor, MarkdownRenderer},
-  computed: mapGetters(["categories"]),
+  components: {MarkdownEditor, MarkdownRenderer, Confirmation},
+  computed: mapGetters(["categories", "loggedIn"]),
   mounted() {
     getCTFs(true).then((ctfs) => {
       this.$data.ctf = ctfs.filter(ctf => ctf.event_id == (this as WriteupDisplay).getCTFId())[0];
@@ -117,7 +145,6 @@ import MarkdownEditor from "@/components/MarkdownEditor.vue";
         });
       }
     });
-
   },
 })
 export default class WriteupDisplay extends Vue {
@@ -129,8 +156,16 @@ export default class WriteupDisplay extends Vue {
 
   private content = "";
   private is_private = false;
+  private editingWriteup = false;
+  private loggedIn!: boolean;
 
-  editing(): boolean {
+  private tab = 0;
+
+  $refs!: {
+    confirmation: Confirmation
+  }
+
+  newWriteup(): boolean {
     return this.$route.name !== "View writeup";
   }
 
@@ -161,16 +196,40 @@ export default class WriteupDisplay extends Vue {
   createWriteup(): void {
     const challenge = this.challenge;
     if (challenge == null) return;
-    createWriteup(challenge, {
+    createWriteup({
       body: this.content,
       is_private: this.is_private,
-      // Will be overwritten by the server
       challenge_id: challenge.challenge_id,
+      // Will be overwritten by the server
       poster_username: "Imposter",
       writeup_id: 1,
     }).then((writeup: Writeup) => {
       this.$router.push(`/writeups/${this.getCTFId()}/${this.getChallengeId()}/${writeup.writeup_id}`);
       location.reload();
+    });
+  }
+
+  deleteWriteup(): void {
+    const id = this.writeup?.writeup_id;
+    if (!id) return;
+    this.$refs.confirmation.open("Delete writeup",
+        `Are you sure you want to delete this writeup?`,
+        "red").then((confirmed) => {
+      if (confirmed) {
+        deleteWriteup(id).then(() => {
+          this.$router.push({path: `/ctfs/${this.getCTFId()}`});
+        });
+      }
+    });
+  }
+
+  editWriteup(): void {
+    const writeup = this.writeup;
+    if (writeup == null) return;
+    writeup.body = this.content;
+    editWriteup(writeup).then(() => {
+      this.editingWriteup = false;
+      this.tab = 0;
     });
   }
 

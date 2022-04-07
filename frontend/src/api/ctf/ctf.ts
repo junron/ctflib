@@ -29,7 +29,7 @@ export async function createChallenge(ctfID: number,
   const props = ["name", "description", "points", "category_name"];
   const formData = new FormData();
   props.forEach(prop => formData.append(prop, (challenge as any)[prop]));
-  challenge.tags.forEach(tag => formData.append("tags", tag));
+  formData.append("tags", challenge.tags.join(","));
   files.forEach(file => formData.append("files", file));
   formData.append("event_id", ctfID.toString());
   return fetch(apiRoot + "/ctfs/get/" + ctfID + "/challenges/create", {

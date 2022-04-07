@@ -105,7 +105,7 @@ export default class CategoryCard extends Vue {
   }
 
   editResource(post: Resource): void {
-    this.$router.replace({name: "New Post", params: {resource: JSON.stringify(post)}});
+    this.$router.replace({name: "Edit Post", params: {resource: JSON.stringify(post)}});
   }
 }
 </script>

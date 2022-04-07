@@ -40,6 +40,17 @@ const routes: Array<RouteConfig> = [
     props: true,
     meta: {
       requiresAuth: true,
+      show: false,
+    },
+  },
+   {
+    path: "/edit-post",
+    name: "Edit Post",
+    component: NewPost,
+    props: true,
+    meta: {
+      requiresAuth: true,
+      show: false,
     },
   },
   {

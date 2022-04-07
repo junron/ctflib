@@ -3,29 +3,33 @@
     <v-row>
       <v-tabs
           v-model="tab"
+          @change="$emit('changeTab', tab)"
       >
         <v-tabs-slider/>
         <v-tab key="write">Write</v-tab>
         <v-tab key="preview">Preview</v-tab>
+        <v-tab key="split" v-if="enableSplit">Split</v-tab>
       </v-tabs>
     </v-row>
     <v-row class="mt-8">
-      <v-textarea
-          auto-grow
-          ref="textarea"
-          v-if="tab === 0"
-          v-model="localContent"
-          :label="label"
-          @input="onInput"
-          :error-messages="localError"
-          :rules="[v => !!v || label + ' is required']"
-          @drop="onDrop"
-          @paste="onPaste"
-      />
-      <MarkdownRenderer
-          v-else
-          :max-width="maxWidth"
-          :content="localContent"/>
+      <v-col v-if="tab === 0 || tab === 2" class="pa-0 ma-0">
+        <v-textarea
+            auto-grow
+            ref="textarea"
+            v-model="localContent"
+            :label="label"
+            @input="onInput"
+            :error-messages="localError"
+            :rules="[v => !!v || label + ' is required']"
+            @drop="onDrop"
+            @paste="onPaste"
+        />
+      </v-col>
+      <v-col v-if="tab === 1 || tab === 2" class="pa-0 ma-0">
+        <MarkdownRenderer
+            :max-width="maxWidth"
+            :content="localContent"/>
+      </v-col>
     </v-row>
   </v-container>
 
@@ -54,6 +58,7 @@ export default class MarkdownEditor extends Vue {
   @Prop() public label!: string;
   @Prop() public error!: string | null;
   @Prop() public maxWidth?: string;
+  @Prop() public enableSplit?: boolean;
 
   tab = null;
 

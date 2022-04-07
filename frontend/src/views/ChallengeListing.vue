@@ -205,7 +205,7 @@ export default class ChallengeListing extends Vue {
           poster_username: "User",
           is_private: false,
         };
-        createWriteup(challenge, writeup).then((createdWriteup) => {
+        createWriteup(writeup).then((createdWriteup) => {
           this.writeups.push(createdWriteup);
         });
       }

@@ -49,6 +49,17 @@
         v-if="tab === 1"
         :query="query"
     />
+    <v-btn
+        v-if="tab === 0"
+        fab
+        fixed
+        bottom
+        right
+        color="primary"
+        @click="$router.push('/new-post')"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
   </v-container>
 </template>
 
