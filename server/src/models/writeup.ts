@@ -4,6 +4,17 @@ import {IsBoolean, IsNumber, IsOptional, IsString} from "class-validator";
 import getConnection from "../database/connect";
 import {RowDataPacket} from "mysql2";
 
+export type WriteupSearchResult = {
+  writeup_id: number;
+  name: string;
+  category_name: string;
+  poster_username: string;
+  ctf_name: string;
+  challenge_id: number;
+  event_id: number;
+  tags: string[];
+}
+
 @Exclude()
 export class Writeup {
   @Expose()
@@ -70,5 +81,46 @@ export class Writeup {
       await connection.rollback();
       throw e;
     }
+  }
+
+  static async search(query: string, auth: boolean): Promise<WriteupSearchResult[]> {
+    const connection = await getConnection();
+    // Only internal writeups are searchable
+    const queryString = `
+        select c.name, writeup_id, c.challenge_id, ce.ctf_name, writeup.poster_username, c.category_name, c.event_id
+        from writeup
+                 inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
+                 inner join challenge c on writeup.challenge_id = c.challenge_id
+                 left join challenge_tag ct on c.challenge_id = ct.challenge_id
+                 inner join ctf_event ce on c.event_id = ce.event_id
+        where (writeup.is_private = FALSE or ? = TRUE)
+          and (tag_name like ?
+            or c.name like ?
+            or iw.body like ?)
+        group by writeup_id
+        order by writeup_id desc;`;
+    const [rows] = await connection.execute<RowDataPacket[]>(queryString,
+      [auth, `%${query}%`, `%${query}%`, `%${query}%`]);
+    const challengeIDs = rows.map(row => row.challenge_id);
+    if (challengeIDs.length === 0) {
+      return [];
+    }
+    const [tags] = await connection.query<RowDataPacket[]>(
+      `SELECT challenge_id, tag_name
+       FROM challenge_tag
+       where challenge_tag.challenge_id IN (?)`, [challengeIDs]);
+    return rows.map(row => {
+      return ({
+        writeup_id: row.writeup_id,
+        name: row.name,
+        poster_username: row.poster_username,
+        ctf_name: row.ctf_name,
+        event_id: row.event_id,
+        challenge_id: row.challenge_id,
+        category_name: row.category_name,
+        tags: tags.filter(tag => tag.challenge_id === row.challenge_id)
+          .map(tag => tag.tag_name)
+      });
+    });
   }
 }

@@ -8,7 +8,7 @@
       <v-row class="px-3">
         <v-col v-for="(post, index) in posts" :key="index"
                cols="12"
-               :lg="important ? 6 : 12"
+               :lg="(important&&posts.length>1) ? 6 : 12"
                class="pa-0">
           <v-divider :key="index"/>
           <v-list-item :key="post.title">
@@ -44,7 +44,7 @@
                 </v-row>
               </v-list-item-title>
               <v-list-item-subtitle class="text-wrap">
-                <MarkdownRenderer :content="post.body"/>
+                <MarkdownRenderer :content="post.body" max-width="100%"/>
               </v-list-item-subtitle>
               <v-chip-group column>
                 <v-chip

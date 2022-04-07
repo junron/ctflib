@@ -1,6 +1,6 @@
 import {fetchJSON, postJSON} from "@/api/index";
 import {Challenge} from "@/types/challenges/challenge";
-import {Writeup} from "@/types/writeup";
+import {Writeup, WriteupSearchResult} from "@/types/writeup";
 
 export async function getWriteupsForChallenge(challenge: Challenge): Promise<Writeup[]> {
   const response = await fetchJSON<Writeup[]>(
@@ -18,5 +18,10 @@ export async function createWriteup(challenge: Challenge, writeup: Writeup): Pro
   if (!response.success) {
     throw new Error("Failed to create writeup");
   }
+  return response.data;
+}
+
+export async function searchWriteups(query: string): Promise<WriteupSearchResult[]> {
+  const response = await fetchJSON<WriteupSearchResult[]>("/writeups/search?q=" + query);
   return response.data;
 }

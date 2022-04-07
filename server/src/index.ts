@@ -17,6 +17,7 @@ import ctftimeRoute from "./routes/ctf/ctftime";
 import shareRoute from "./routes/share";
 import uploadRoute from "./routes/upload";
 import serveRoute from "./routes/serve";
+import writeupRoute from "./routes/writeup";
 
 
 const app = express();
@@ -60,6 +61,8 @@ const app = express();
   app.use("/ctftime", ctftimeRoute);
 
   app.use("/share", shareRoute);
+  app.use("/writeups", auth(false));
+  app.use("/writeups", writeupRoute);
 
   app.use("/upload", auth(true));
   app.use("/upload", uploadRoute);
