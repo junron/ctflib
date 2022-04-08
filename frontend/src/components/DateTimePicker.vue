@@ -45,7 +45,8 @@
         </v-card-text>
         <v-card-actions class="pt-0">
           <v-spacer/>
-          <v-btn :disabled="!(localDateString && localTimeString)" color="primary" text @click="saveNew()">Confirm</v-btn>
+          <v-btn :disabled="!(localDateString && localTimeString)" color="primary" text @click="saveNew()">Confirm
+          </v-btn>
           <v-btn color="grey" text @click="dialog=false; reset()">Cancel</v-btn>
         </v-card-actions>
       </v-card>

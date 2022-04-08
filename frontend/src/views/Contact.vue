@@ -15,7 +15,7 @@
               <v-icon class="px-2">{{ optionIcons[index] }}</v-icon>
             </v-btn>
           </template>
-          {{option}}
+          {{ option }}
         </v-tooltip>
       </v-btn-toggle>
     </v-row>
@@ -65,8 +65,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {required, email} from "vee-validate/dist/rules";
-import {extend, ValidationObserver, ValidationProvider, setInteractionMode} from "vee-validate";
+import {email, required} from "vee-validate/dist/rules";
+import {extend, setInteractionMode, ValidationObserver, ValidationProvider} from "vee-validate";
 
 setInteractionMode("eager");
 
@@ -100,8 +100,8 @@ export default class Contact extends Vue {
     console.log("Contact");
   }
 
-  contactMethodChange(method: string): void{
-    if(method == "GitHub"){
+  contactMethodChange(method: string): void {
+    if (method == "GitHub") {
       window.open("https://github.com/junron", "_blank");
     }
   }

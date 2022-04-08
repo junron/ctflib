@@ -6,7 +6,6 @@ import {validate} from "class-validator";
 import multer from "multer";
 import {ChallengeFile} from "../../models/challenge/challengeFile";
 import {jsonOrNull} from "../../util";
-import {Resource} from "../../models/resource";
 
 const router = require('express').Router({mergeParams: true});
 
@@ -105,7 +104,7 @@ router.delete("/delete/:chalID", async (req: Request, res: Response, next: NextF
     res.failure("Invalid ID", "id");
     return;
   }
-    let challenge = await Challenge.getChallengeByID(id);
+  let challenge = await Challenge.getChallengeByID(id);
   if (!challenge) {
     return res.failure("Challenge not found", "id");
   }

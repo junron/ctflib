@@ -3,7 +3,6 @@ import {Writeup} from "../models/writeup";
 import {Challenge} from "../models/challenge/challenge";
 import {plainToInstance} from "class-transformer";
 import {validate} from "class-validator";
-import {Resource} from "../models/resource";
 
 const router = require('express').Router({mergeParams: true});
 

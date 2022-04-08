@@ -2,7 +2,6 @@ import {NextFunction, Request, Response} from "express";
 import {plainToInstance} from "class-transformer";
 import {validate} from "class-validator";
 import {Resource} from "../models/resource";
-import multer from "multer";
 
 const router = require('express').Router();
 

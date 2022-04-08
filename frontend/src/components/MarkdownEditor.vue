@@ -25,6 +25,10 @@
             @paste="onPaste"
         />
       </v-col>
+      <v-col cols="auto"
+             v-if="tab === 2"
+             class="mx-4"
+      />
       <v-col v-if="tab === 1 || tab === 2" class="pa-0 ma-0">
         <MarkdownRenderer
             :max-width="maxWidth"

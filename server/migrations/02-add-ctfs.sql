@@ -78,7 +78,8 @@ values (1536, (select max(event_id) from ctf_event), 3847.0, 123, 2582.0, 3, 24.
 insert into ctf_series (name, organizer)
 values ('Whitehacks', 'SMU');
 insert into ctf_event(ctf_name, start_date, end_date, website)
-values ('Whitehacks', '2021-03-07 09:00:00+08:00', '2021-03-07 17:00:00+08:00', 'https://play.whitehacks.ctf.sg/competition');
+values ('Whitehacks', '2021-03-07 09:00:00+08:00', '2021-03-07 17:00:00+08:00',
+        'https://play.whitehacks.ctf.sg/competition');
 insert into ctf_series (name, organizer)
 values ('Sieberrsec', 'Hwa Chong Institution');
 insert into ctf_event(ctf_name, start_date, end_date, website)
@@ -86,8 +87,10 @@ values ('Sieberrsec', '2021-12-26 07:15:00+08:00', '2021-12-27 00:15:00+08:00', 
 insert into ctf_series (name, organizer)
 values ('SECCON Beginner', 'SECCON');
 insert into ctf_event(ctf_name, start_date, end_date, website)
-values ('SECCON Beginner', '2021-05-22 00:00:00+08:00', '2021-05-23 00:00:00+08:00', 'https://www.seccon.jp/2021/beginners/about-seccon-beginners.html');
+values ('SECCON Beginner', '2021-05-22 00:00:00+08:00', '2021-05-23 00:00:00+08:00',
+        'https://www.seccon.jp/2021/beginners/about-seccon-beginners.html');
 insert into ctf_series (name, organizer)
 values ('Cyberthon', 'Hwa Chong Institution');
 insert into ctf_event(ctf_name, start_date, end_date, website)
-values ('Cyberthon', '2021-05-08 09:30:00+08:00', '2021-05-08 00:18:00+08:00', 'https://play.cyberthon21f.ctf.sg/game/ckocbvyy2eo1i0860fzv22h3l');
+values ('Cyberthon', '2021-05-08 09:30:00+08:00', '2021-05-08 00:18:00+08:00',
+        'https://play.cyberthon21f.ctf.sg/game/ckocbvyy2eo1i0860fzv22h3l');

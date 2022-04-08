@@ -13,4 +13,5 @@ VALUES ('Whitehacks', '2022-03-20 09:00:00', '2022-03-20 17:15:00', 'https://pla
 
 insert into challenge (event_id, name, category_name, description, points)
 values ((select max(event_id) from ctf_event), 'Meoware', 'Web',
-        'SpaceY Corp. has been hit by a meoware attack. Wait a second, what even is a meoware? Nevertheless, your job here is simple. Retrieve the stolen flag from their web servers before they vanish for good.',1000)
+        'SpaceY Corp. has been hit by a meoware attack. Wait a second, what even is a meoware? Nevertheless, your job here is simple. Retrieve the stolen flag from their web servers before they vanish for good.',
+        1000)

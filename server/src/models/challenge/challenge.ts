@@ -7,6 +7,7 @@ import {Writeup} from "../writeup";
 import {Connection} from "mysql2/promise";
 
 import * as fs from "fs/promises";
+import {safeUnlink} from "../../util";
 
 
 export type ChallengeEdit = Challenge & {
@@ -185,7 +186,7 @@ export class Challenge {
     if (filesToRemove.length > 0) {
       await connection.query("DELETE FROM challenge_file WHERE challenge_file.file_id IN (?)",
         [filesToRemove.map(file => file.file_id)]);
-      await Promise.all(filesToRemove.map(file => fs.unlink(file.file_path)));
+      await Promise.all(filesToRemove.map(file => safeUnlink(file.file_path)));
     }
     if (filesToAdd.length > 0) {
       await connection.query("INSERT INTO challenge_file (challenge_id, file_name, file_path, file_type) VALUES ? ",

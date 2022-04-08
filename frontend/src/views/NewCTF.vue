@@ -117,7 +117,7 @@ export default class NewCTF extends Vue {
   }
 
   createCTF(): void {
-    if(!this.start_date || !this.end_date) return;
+    if (!this.start_date || !this.end_date) return;
     this.localCTF.start_date = this.start_date;
     this.localCTF.end_date = this.end_date;
     createCTF(this.localCTF).then(_ => {

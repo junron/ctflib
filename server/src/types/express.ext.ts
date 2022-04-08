@@ -18,6 +18,7 @@ declare global {
       validationFailure(errors: ValidationError[]): void;
 
       handleDup(promise: Promise<any>, entity: string, field: string): Promise<boolean>;
+
       handleRefViolation(promise: Promise<any>, field: string): Promise<boolean>;
     }
   }

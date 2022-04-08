@@ -43,7 +43,7 @@ export default class ExternalWriteupInput extends Vue {
   private url: string | null = null;
   private valid = false;
 
-  private resolve: ((value: string|null) => void) | null = null;
+  private resolve: ((value: string | null) => void) | null = null;
 
   $refs!: {
     form: HTMLFormElement;
@@ -56,14 +56,14 @@ export default class ExternalWriteupInput extends Vue {
     return "Invalid URL";
   }
 
-  open(challengeTitle: string): Promise<string|null> {
+  open(challengeTitle: string): Promise<string | null> {
     this.dialog = true;
     this.challengeTitle = challengeTitle;
     this.url = null;
-    if(this.$refs.form){
+    if (this.$refs.form) {
       this.$refs.form.reset();
     }
-    return new Promise<string|null>((resolve) => {
+    return new Promise<string | null>((resolve) => {
       this.resolve = resolve;
     });
   }

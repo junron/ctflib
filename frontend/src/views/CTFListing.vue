@@ -8,9 +8,9 @@
       </v-col>
       <v-col v-if="loggedIn" cols="auto">
         <v-btn
-          color="primary"
-          dark
-          href="/#/ctfs/new"
+            color="primary"
+            dark
+            href="/#/ctfs/new"
         >
           Add new CTF event
         </v-btn>

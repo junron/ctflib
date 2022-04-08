@@ -29,7 +29,7 @@ export class ChallengeFile {
 
   static async getFileByID(id: number): Promise<ChallengeFile> {
     const connection = await getConnection();
-    const [result,_] = await connection.query<RowDataPacket[]>(
+    const [result, _] = await connection.query<RowDataPacket[]>(
       "SELECT * FROM challenge_file WHERE file_id = ?",
       [id]
     );

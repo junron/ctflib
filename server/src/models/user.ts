@@ -40,11 +40,11 @@ export class User {
       [this.username, this.email, this.github_username, this.password_hash]);
   }
 
-  static async getByUsername(username: string){
+  static async getByUsername(username: string) {
     const connection = await getConnection();
     const [rows, _] = await connection.execute("SELECT * FROM user WHERE username = ?", [username]);
     const user = (rows as RowDataPacket)[0];
-    if(!user) return null;
+    if (!user) return null;
     return this.fromJson(user);
   }
 

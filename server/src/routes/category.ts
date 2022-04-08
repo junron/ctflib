@@ -11,7 +11,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/create", async (req: Request, res: Response, next: NextFunction) => {
-  const category = plainToInstance(Category, req.body as Category, { exposeDefaultValues: true });
+  const category = plainToInstance(Category, req.body as Category, {exposeDefaultValues: true});
   const errors = await validate(category);
   if (errors.length == 0) {
     if (await res.handleDup(category.create(), "category", "name")) {

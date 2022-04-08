@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="maxWidth" persistent @keydown.esc="cancel" >
+  <v-dialog v-model="dialog" :max-width="maxWidth" persistent @keydown.esc="cancel">
     <v-card>
-      <v-toolbar dark  dense flat>
+      <v-toolbar dark dense flat>
         <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text v-show="!!message" class="pa-4">{{ message }}</v-card-text>

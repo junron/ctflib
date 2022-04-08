@@ -1,7 +1,4 @@
 import {NextFunction, Request, Response} from "express";
-import {Writeup} from "../models/writeup";
-import xss from "xss";
-import {Challenge} from "../models/challenge/challenge";
 import multer from 'multer';
 import {ImgurClient} from "imgur";
 import config from "../config";

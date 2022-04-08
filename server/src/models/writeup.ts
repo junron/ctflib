@@ -159,7 +159,7 @@ export class Writeup {
       if (newWriteup.url) {
         await connection.query("UPDATE external_writeup SET url = ? WHERE external_writeup_id = ?",
           [newWriteup.url, this.writeup_id]);
-      } else if(newWriteup.body){
+      } else if (newWriteup.body) {
         await connection.query("UPDATE internal_writeup SET body = ? WHERE internal_writeup_id = ?",
           [newWriteup.body, this.writeup_id]);
       }

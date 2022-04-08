@@ -130,17 +130,17 @@ export default class Login extends Vue {
           }
         });
       } else {
-        if(response.field == "secret"){
+        if (response.field == "secret") {
           this.secretError = response.message;
         }
-        if(response.field == "name"){
+        if (response.field == "name") {
           this.nameError = response.message;
         }
       }
     });
   }
 
-  reset(): void{
+  reset(): void {
     this.name = "";
     this.password = "";
     this.email = "";

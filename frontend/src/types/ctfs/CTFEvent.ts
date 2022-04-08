@@ -1,4 +1,4 @@
-export interface CTFEvent{
+export interface CTFEvent {
   event_id: number,
   ctf_name: string,
   start_date: Date,

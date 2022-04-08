@@ -36,7 +36,7 @@ export async function editChallenge(ctfID: number,
   }).then((res) => res.json());
 }
 
-export async function deleteChallenge(ctfID: number,challengeId: number): Promise<APIResponse<null>> {
+export async function deleteChallenge(ctfID: number, challengeId: number): Promise<APIResponse<null>> {
   return fetch(`${apiRoot}/ctfs/get/${ctfID}/challenges/delete/${challengeId}`, {
     method: "DELETE",
     credentials: "include",
