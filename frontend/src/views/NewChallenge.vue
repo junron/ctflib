@@ -39,23 +39,46 @@
           <TagPicker
               :category="localChallenge.category_name"
               :tags.sync="localChallenge.tags"/>
+          <div v-if="challenge">
+            Current files:
+            <v-chip-group>
+              <v-chip v-for="(file, index) in localChallenge.files" :key="file.file_id"
+                      small
+                      close
+                      @click:close="removeExistingFileFromSelection(index)"
+              >
+                {{ file.file_name }}
+              </v-chip>
+            </v-chip-group>
+            <span v-if="localChallenge.files.length === 0">
+              There are no files attached to this challenge.
+            </span>
+          </div>
           <div @drop="onDrop"
                @dragover.prevent>
             <v-file-input
                 v-model="files"
-                counter
                 multiple
-                show-size
-                label="Upload files"/>
+                chips
+                label="Upload files">
+              <template v-slot:selection="{ index, text }">
+                <v-chip
+                    close
+                    @click:close="removeFileFromSelection(index)"
+                >
+                  {{ text }}
+                </v-chip>
+              </template>
+            </v-file-input>
           </div>
-          <!--          Button for creating challenge  -->
+          <!--  Button for creating challenge  -->
           <v-btn v-if="!challenge"
                  color="success"
                  @click="createChallenge()"
                  :disabled="!valid || !localChallenge.category_name.length">
             Submit
           </v-btn>
-          <!--    Button for saving edited challenge -->
+          <!--  Button for saving edited challenge -->
           <v-btn v-else
                  color="blue"
                  @click="editChallenge()"
@@ -83,11 +106,16 @@ import CategoryPicker from "@/components/CategoryPicker.vue";
 import TagPicker from "@/components/TagPicker.vue";
 import {Prop} from "vue-property-decorator";
 import {Challenge} from "@/types/challenges/challenge";
-import {createChallenge} from "@/api/ctf/ctf";
+import {createChallenge, editChallenge} from "@/api/ctf/challenge";
 
 @Component({
   name: "NewChallenge",
   components: {TagPicker, CategoryPicker, MarkdownEditor},
+  mounted() {
+    const challenge = (this as NewChallenge).challenge;
+    if (!challenge) return;
+    (this as NewChallenge).localChallenge = JSON.parse(challenge);
+  },
 })
 export default class NewChallenge extends Vue {
   valid = false
@@ -101,14 +129,14 @@ export default class NewChallenge extends Vue {
   // Passed in as a string because vue router
   @Prop() public challenge!: string | null;
 
-  private localChallenge: Challenge = this.$props.resource ? JSON.parse(this.$props.challenge) : {
+  private localChallenge: Challenge = {
     name: "",
     description: "",
     category_name: "",
     points: null,
     tags: [],
     files: [],
-  }
+  } as any;
 
   createChallenge(): void {
     createChallenge(this.getCTFId(), this.localChallenge, this.files).then(response => {
@@ -128,11 +156,27 @@ export default class NewChallenge extends Vue {
   }
 
   editChallenge(): void {
-    // TODO
+    editChallenge(this.getCTFId(),
+        this.localChallenge,
+        this.localChallenge.files.map(file => file.file_id),
+        this.files,
+    ).then(response => {
+      if (response.success) {
+        this.back();
+      }
+    });
+  }
+
+  removeFileFromSelection(index: number): void {
+    this.files.splice(index, 1);
+  }
+
+  removeExistingFileFromSelection(index: number): void {
+    this.localChallenge.files.splice(index, 1);
   }
 
   back(): void {
-    this.$router.replace({path: "/ctfs/" + this.getCTFId()});
+    this.$router.push({path: "/ctfs/" + this.getCTFId()});
   }
 
   reset(): void {

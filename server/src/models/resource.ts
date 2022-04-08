@@ -87,7 +87,10 @@ export class Resource extends Post {
                              OR body LIKE ?
                              OR tag_name LIKE ?)
                          group by post.post_id;`;
-    const [rows] = await connection.execute<RowDataPacket[]>(queryString, [auth, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]);
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      queryString,
+      [auth, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]
+    );
     return plainToInstance(Resource, Post.getTags<Resource>(rows as Resource[]));
   }
 

@@ -86,15 +86,39 @@
               </v-list-item>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <markdown-renderer
-                  max-width="'100%'"
-                  :content="challenge.description"
-                  class="ma-4"/>
-              <span class="ma-4" v-for="file in challenge.files" :key="file.file_id">
-                  <a :href="fileURL(file.file_id)">
-                    {{ file.file_name }}
-                  </a>
-              </span>
+              <v-row class="ma-4">
+                <v-col>
+                  <markdown-renderer
+                      max-width="100%"
+                      :content="challenge.description"
+                  />
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn icon small
+                         v-if="loggedIn"
+                         @click="startChallengeEdit(challenge)"
+                  >
+                    <v-icon color="blue">mdi-pencil</v-icon>
+                  </v-btn>
+                  <v-btn icon small
+                         v-if="loggedIn"
+                         @click="deleteChallenge(challenge)"
+                  >
+                    <v-icon color="red">mdi-delete</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <v-row class="ma-4" v-if="challenge.files.length > 0">
+                <v-col>
+                  Files:
+                  <span v-for="file in challenge.files" :key="file.file_id">
+                    <a :href="fileURL(file.file_id)">
+                      {{ file.file_name }}
+                    </a>
+                    &nbsp;
+                  </span>
+                </v-col>
+              </v-row>
               <v-divider/>
               <v-row class="ma-4">
                 <!-- Internal writeups -->
@@ -153,6 +177,10 @@
         ref="extWriteupInput"
         max-width="498px"
     />
+    <confirmation
+        ref="confirmation"
+        :max-width="'500px'"
+    />
   </v-container>
 </template>
 
@@ -170,10 +198,12 @@ import {Writeup} from "@/types/writeup";
 import {createWriteup, getWriteupsForChallenge} from "@/api/writeup";
 import {apiRoot} from "@/api";
 import ExternalWriteupInput from "@/components/ExternalWriteupInput.vue";
+import {deleteChallenge} from "@/api/ctf/challenge";
+import Confirmation from "@/components/Confirmation.vue";
 
 @Component({
   name: "ChallengeListing",
-  components: {ExternalWriteupInput, MarkdownRenderer},
+  components: {ExternalWriteupInput, MarkdownRenderer, Confirmation},
   computed: mapGetters(["categories", "loggedIn"]),
   mounted() {
     getCTFs(true).then((ctfs) => {
@@ -192,10 +222,11 @@ export default class ChallengeListing extends Vue {
   private writeups: Writeup[] = [];
 
   $refs!: {
-    extWriteupInput: ExternalWriteupInput
+    extWriteupInput: ExternalWriteupInput,
+    confirmation: Confirmation,
   }
 
-  newExtWriteup(challenge: Challenge) : void{
+  newExtWriteup(challenge: Challenge): void {
     this.$refs.extWriteupInput.open(challenge.name).then((url) => {
       if (url) {
         const writeup: Writeup = {
@@ -221,7 +252,7 @@ export default class ChallengeListing extends Vue {
       return;
     }
     getWriteupsForChallenge(challenge).then((writeups) => {
-      writeups.forEach(writeup=>this.writeups.push(writeup));
+      writeups.forEach(writeup => this.writeups.push(writeup));
     });
   }
 
@@ -253,6 +284,28 @@ export default class ChallengeListing extends Vue {
 
   effectiveColor(category: Category): string {
     return effectiveColor(category, this.$vuetify.theme.dark);
+  }
+
+  startChallengeEdit(challenge: Challenge): void {
+    this.$router.push({
+      name: "Edit challenge",
+      params: {
+        eventID: this.getCTFId().toString(),
+        challenge: JSON.stringify(challenge),
+      },
+    });
+  }
+
+  deleteChallenge(challenge: Challenge): void {
+    this.$refs.confirmation.open("Delete challenge",
+        `Are you sure you want to delete "${challenge.name}"?`,
+        "red").then((confirmed) => {
+      if (confirmed) {
+        deleteChallenge(this.getCTFId(), challenge.challenge_id).then(() => {
+          this.challenges = this.challenges.filter(c => c.challenge_id !== challenge.challenge_id);
+        });
+      }
+    });
   }
 
   fileURL(id: number): string {

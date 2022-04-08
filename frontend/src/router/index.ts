@@ -43,7 +43,7 @@ const routes: Array<RouteConfig> = [
       show: false,
     },
   },
-   {
+  {
     path: "/edit-post",
     name: "Edit Post",
     component: NewPost,
@@ -90,6 +90,15 @@ const routes: Array<RouteConfig> = [
     path: "/ctfs/:eventID/challenges/new",
     name: "Create challenge",
     component: NewChallenge,
+    meta: {
+      show: false,
+    },
+  },
+  {
+    path: "/ctfs/:eventID/challenges/edit",
+    name: "Edit challenge",
+    component: NewChallenge,
+    props: true,
     meta: {
       show: false,
     },
