@@ -12,7 +12,7 @@
       </v-tabs>
     </v-row>
     <v-row class="mt-8">
-      <v-col v-if="tab === 0 || tab === 2" class="pa-0 ma-0">
+      <v-col v-if="tab === 0 || tab === 2" class="pa-0 ma-0" cols="5">
         <v-textarea
             auto-grow
             ref="textarea"
@@ -25,11 +25,11 @@
             @paste="onPaste"
         />
       </v-col>
-      <v-col cols="auto"
+      <v-col cols="1"
              v-if="tab === 2"
              class="mx-4"
       />
-      <v-col v-if="tab === 1 || tab === 2" class="pa-0 ma-0">
+      <v-col v-if="tab === 1 || tab === 2" class="pa-0 ma-0" cols="5">
         <MarkdownRenderer
             :max-width="maxWidth"
             :content="localContent"/>

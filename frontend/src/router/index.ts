@@ -9,6 +9,8 @@ import ChallengeListing from "@/views/ChallengeListing.vue";
 import WriteupDisplay from "@/views/WriteupDisplay.vue";
 import NewChallenge from "@/views/NewChallenge.vue";
 import NewCTF from "@/views/NewCTF.vue";
+import GuideDisplay from "@/views/GuideDisplay.vue";
+import GuideEditor from "@/views/GuideEditor.vue";
 
 Vue.use(VueRouter);
 
@@ -99,6 +101,30 @@ const routes: Array<RouteConfig> = [
     name: "Edit challenge",
     component: NewChallenge,
     props: true,
+    meta: {
+      show: false,
+    },
+  },
+  {
+    path: "/guides/new",
+    name: "Create guide",
+    component: GuideEditor,
+    meta: {
+      show: false,
+    },
+  },
+  {
+    path: "/guides/:id",
+    name: "View guide",
+    component: GuideDisplay,
+    meta: {
+      show: false,
+    },
+  },
+  {
+    path: "/guides/:id/edit",
+    name: "Edit guide",
+    component: GuideEditor,
     meta: {
       show: false,
     },

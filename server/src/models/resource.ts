@@ -46,19 +46,6 @@ export class Resource extends Post {
     return null;
   }
 
-
-  static async getResources(auth: boolean) {
-    const connection = await getConnection();
-    const [result] = await connection.execute<RowDataPacket[]>(
-      `SELECT post.*, resource.body
-       FROM post,
-            resource
-       WHERE resource_id = post.post_id
-         AND (is_private = false
-           OR ? = true)`, [auth]);
-    return plainToInstance(Resource, Post.getTags<Resource>(result as Resource[]));
-  }
-
   async deleteResource() {
     const connection = await getConnection();
     await connection.beginTransaction();
@@ -91,7 +78,7 @@ export class Resource extends Post {
       queryString,
       [auth, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]
     );
-    return plainToInstance(Resource, Post.getTags<Resource>(rows as Resource[]));
+    return plainToInstance(Resource, await Post.getTags<Resource>(rows as Resource[]));
   }
 
   async editResource(newResource: Resource): Promise<void> {

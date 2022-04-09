@@ -49,6 +49,10 @@
         v-if="tab === 1"
         :query="query"
     />
+    <GuideListing
+        v-if="tab === 2"
+        :query="query"
+    />
     <v-btn
         v-if="tab === 0"
         fab
@@ -57,6 +61,17 @@
         right
         color="primary"
         @click="$router.push('/new-post')"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
+    <v-btn
+        v-if="tab === 2"
+        fab
+        fixed
+        bottom
+        right
+        color="primary"
+        @click="$router.push('/guides/new')"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -71,10 +86,12 @@ import {mapGetters} from "vuex";
 import {Category} from "@/types/category";
 import PostListing from "@/components/PostListing.vue";
 import WriteupListing from "@/components/WriteupListing.vue";
+import GuideListing from "@/components/GuideListing.vue";
 
 @Component({
   name: "MainContent",
   components: {
+    GuideListing,
     WriteupListing,
     PostListing,
     CategoryCard,

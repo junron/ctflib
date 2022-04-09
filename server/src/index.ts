@@ -11,6 +11,7 @@ import bodyParser from "body-parser";
 import authRoute from "./routes/auth";
 import categoryRoute from "./routes/category";
 import resourceRoute from "./routes/resource";
+import guideRoute from "./routes/guide";
 import tagsRoute from "./routes/tags";
 import ctfRoute from "./routes/ctf/ctf";
 import ctftimeRoute from "./routes/ctf/ctftime";
@@ -48,20 +49,31 @@ const app = express();
   app.use("/resources", auth(false));
   app.use("/resources/create", auth(true));
   app.use("/resources/delete", auth(true));
+  app.use("/resources/edit", auth(true));
   app.use("/resources", resourceRoute);
+
+  app.use("/guides", auth(false));
+  app.use("/guides/create", auth(true));
+  app.use("/guides/edit", auth(true));
+  app.use("/guides/delete", auth(true));
+  app.use("/guides", guideRoute);
 
   app.use("/tags", auth(false));
   app.use("/tags", tagsRoute);
 
   app.use("/ctfs/get/:id/challenges/:chalID/writeups", auth(false));
-  app.use("/ctfs/get/:id/challenges/:chalID/writeups/create", auth(true));
   app.use("/ctfs/get/:id/challenges/create", auth(true));
+  app.use("/ctfs/get/:id/challenges/edit", auth(true));
+  app.use("/ctfs/get/:id/challenges/delete", auth(true));
   app.use("/ctfs/create", auth(true));
   app.use("/ctfs", ctfRoute);
   app.use("/ctftime", ctftimeRoute);
 
   app.use("/share", shareRoute);
   app.use("/writeups", auth(false));
+  app.use("/writeups/create", auth(true));
+  app.use("/writeups/edit", auth(true));
+  app.use("/writeups/delete", auth(true));
   app.use("/writeups", writeupRoute);
 
   app.use("/upload", auth(true));

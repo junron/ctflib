@@ -5,11 +5,6 @@ import {Resource} from "../models/resource";
 
 const router = require('express').Router();
 
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const resources = await Resource.getResources(req.auth);
-  return res.success("", resources);
-});
-
 router.get("/get/:id", async (req: Request, res: Response, next: NextFunction) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
@@ -31,11 +26,7 @@ router.get("/search", async (req: Request, res: Response, next: NextFunction) =>
     return;
   }
   const resources = await Resource.search(q, req.auth);
-  if (resources) {
-    res.success("Success", resources);
-  } else {
-    res.failure("Resource not found", "id");
-  }
+  res.success("Success", resources);
 });
 
 router.post("/create", async (req: Request, res: Response, next: NextFunction) => {

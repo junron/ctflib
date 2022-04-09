@@ -30,7 +30,11 @@
             That challenge does not exist.
           </v-card-title>
           <v-card-subtitle v-if="challenge">
-            By {{ ctf.organizer }}, {{ challenge.points }} points
+            By {{ ctf.organizer }} in
+            <a :href="'/#/ctfs/'+ctf.event_id">
+              {{ ctf.ctf_name }} {{ctf.start_date.getFullYear()}}
+            </a>,
+            {{ challenge.points }} points
           </v-card-subtitle>
         </v-col>
         <v-spacer/>
