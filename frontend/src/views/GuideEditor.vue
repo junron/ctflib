@@ -25,6 +25,7 @@
       </v-row>
       <v-card-text>
         <v-form
+            v-if="guide"
             class="mx-8"
             ref="form"
             v-model="valid"
@@ -67,13 +68,14 @@
                   v-model="selectedSeries"
                   label="Series"
                   :items="series.map(a=>({text:a.title, value: a.series_id}))"
+                  :disabled="getGuideId()>0"
               />
             </v-col>
           </v-row>
         </v-form>
       </v-card-text>
     </v-card>
-    <v-card elevation="8">
+    <v-card elevation="8" v-if="guide">
       <v-card-title class="px-12 py-8">
         Your guide
       </v-card-title>
@@ -140,7 +142,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {apiRoot} from "@/api";
 import {Guide, Series} from "@/types/posts/guide";
-import {getGuide, getSeries, createGuide} from "@/api/posts/guide";
+import {createGuide, editGuide, getGuide, getSeries} from "@/api/posts/guide";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
 import CategoryPicker from "@/components/CategoryPicker.vue";
 import TagPicker from "@/components/TagPicker.vue";
@@ -235,18 +237,22 @@ export default class GuideEditor extends Vue {
       }
     }
     createGuide(this.guide).then((guide) => {
-      this.$router.push(`/guides/${guide.data.post_id}`);
+      this.$router.replace(`/guides/${guide.data.post_id}`);
     });
   }
 
   editGuide(): void {
-    // editResource(this.guide).then(response => {
-    //   this.success = response.success;
-    //   this.back();
-    // });
+    if (!this.guide) return;
+    editGuide(this.guide).then((guide) => {
+      this.$router.replace(`/guides/${guide.data.post_id}`);
+    });
   }
 
   back(): void {
+    if(this.guide?.post_id){
+      this.$router.replace(`/guides/${this.guide.post_id}`);
+      return;
+    }
     this.$router.replace({name: "Home"});
   }
 

@@ -38,13 +38,12 @@
         <v-col
             class="mx-6 my-4" cols="auto"
         >
-          <!--          <v-btn icon small-->
-          <!--                 v-if="loggedIn && !newWriteup()"-->
-          <!--                 :disabled="editingWriteup"-->
-          <!--                 @click="editingWriteup = true; content= guide.body"-->
-          <!--          >-->
-          <!--            <v-icon color="blue">mdi-pencil</v-icon>-->
-          <!--          </v-btn>-->
+                    <v-btn icon small
+                           v-if="loggedIn"
+                           @click="$router.push(`/guides/${guide.post_id}/edit`)"
+                    >
+                      <v-icon color="blue">mdi-pencil</v-icon>
+                    </v-btn>
           <v-btn icon
                  v-if="guide"
                  @click="share()"
