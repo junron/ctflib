@@ -66,7 +66,10 @@ const app = express();
   app.use("/ctfs/get/:id/challenges/edit", auth(true));
   app.use("/ctfs/get/:id/challenges/delete", auth(true));
   app.use("/ctfs/create", auth(true));
+  app.use("/ctfs/edit", auth(true));
   app.use("/ctfs", ctfRoute);
+  app.use("/ctftime/create", auth(true));
+  app.use("/ctftime/edit", auth(true));
   app.use("/ctftime", ctftimeRoute);
 
   app.use("/share", shareRoute);

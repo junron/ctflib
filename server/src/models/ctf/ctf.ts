@@ -70,8 +70,8 @@ export class CTF {
     return plainToInstance(Challenge, rows, {exposeDefaultValues: true});
   }
 
-  async create() {
-    const connection: Connection = await getConnection();
+  async create(_connection?: Connection) {
+    const connection = _connection ?? await getConnection();
     await connection.beginTransaction();
     try {
       const [orgs, _] = await connection.execute<RowDataPacket[]>(
@@ -93,10 +93,19 @@ export class CTF {
       await connection.execute(
         "insert into ctf_event (ctf_name, start_date, end_date, website) values (?, ?, ?, ?)",
         [this.ctf_name, this.start_date, this.end_date, this.website]);
+      const [lastID] = await connection.execute<RowDataPacket[]>("SELECT LAST_INSERT_ID() as id");
+      this.event_id = lastID[0].id;
       await connection.commit();
     } catch (e) {
       await connection.rollback();
       throw e;
     }
+  }
+
+  async editCTF(newCTF: CTF, _connection?: Connection) {
+    const connection = _connection ?? await getConnection();
+    await connection.execute(
+      "update ctf_event set start_date = ?, end_date = ?, website = ? where event_id = ?",
+      [newCTF.start_date, newCTF.end_date, newCTF.website, this.event_id]);
   }
 }

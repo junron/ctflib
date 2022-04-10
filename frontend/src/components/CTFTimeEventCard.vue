@@ -12,14 +12,14 @@
               style="font-size: 1.5em"
               align="center"
               justify="center">
-            {{ formatRank(ctftimeEvent.ranking) }}
+            {{ ctftimeEvent.ranking ? formatRank(ctftimeEvent.ranking) : '-' }}
           </v-row>
           <v-row>
             <v-divider class="my-1" style="border-bottom-width: 1px"/>
           </v-row>
           <v-row align="center"
                  justify="center">
-            {{ ctftimeEvent.num_teams }} teams
+            {{ ctftimeEvent.num_teams ? ctftimeEvent.num_teams : 'unknown' }} teams
           </v-row>
         </v-col>
         <v-col class="mx-2">
@@ -28,7 +28,7 @@
               style="font-size: 1.5em"
               align="center"
               justify="center">
-            {{ ctftimeEvent.rating_points.toFixed(2) }}
+            {{ ctftimeEvent.rating_points ? ctftimeEvent.rating_points.toFixed(2) : '-' }}
           </v-row>
           <v-row>
             <v-divider class="my-1" style="border-bottom-width: 1px"/>

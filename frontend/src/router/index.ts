@@ -8,7 +8,7 @@ import NewPost from "@/views/NewPost.vue";
 import ChallengeListing from "@/views/ChallengeListing.vue";
 import WriteupDisplay from "@/views/WriteupDisplay.vue";
 import NewChallenge from "@/views/NewChallenge.vue";
-import NewCTF from "@/views/NewCTF.vue";
+import CTFEditor from "@/views/CTFEditor.vue";
 import GuideDisplay from "@/views/GuideDisplay.vue";
 import GuideEditor from "@/views/GuideEditor.vue";
 
@@ -58,7 +58,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/ctfs/new",
     name: "Create CTF",
-    component: NewCTF,
+    component: CTFEditor,
     meta: {
       show: false,
     },
@@ -67,6 +67,14 @@ const routes: Array<RouteConfig> = [
     path: "/ctfs/:id",
     name: "CTF",
     component: ChallengeListing,
+    meta: {
+      show: false,
+    },
+  },
+  {
+    path: "/ctfs/:id/edit",
+    name: "Edit CTF",
+    component: CTFEditor,
     meta: {
       show: false,
     },

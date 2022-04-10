@@ -52,13 +52,12 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import {getRank} from "@/api/ctftime";
 import {CTFTimeEvent} from "@/types/ctfs/CTFTimeEvent";
 import {CTFEvent} from "@/types/ctfs/CTFEvent";
 import {getCTFs} from "@/api/ctf/ctf";
 import CTFTimeEventCard from "@/components/CTFTimeEventCard.vue";
 import CTFEventCard from "@/components/CTFEventCard.vue";
-import {getCTFTimeEVents} from "@/api/ctf/ctftime";
+import {getCTFTimeEvents} from "@/api/ctf/ctftime";
 import {mapGetters} from "vuex";
 
 @Component({
@@ -69,13 +68,11 @@ import {mapGetters} from "vuex";
   },
   computed: mapGetters(["loggedIn"]),
   mounted() {
-    getRank().then(response => {
-      this.$data.globalRank = response.rank;
-      this.$data.localRank = response.localRank;
-    });
-    getCTFTimeEVents().then(events => {
+    getCTFTimeEvents().then(events => {
       this.$data.ctfTimeEvents = events.sort((a: CTFTimeEvent, b: CTFTimeEvent) => {
-        return -(a.rating_points - b.rating_points);
+        const ratingA = a.rating_points ?? 0;
+        const ratingB = b.rating_points ?? 0;
+        return ratingB - ratingA;
       });
     });
     getCTFs().then(ctfs => {

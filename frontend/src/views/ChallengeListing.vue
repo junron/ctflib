@@ -4,7 +4,20 @@
       <v-row>
         <v-col>
           <v-card-title v-if="ctf">
-            {{ ctf.ctf_name }} {{ ctf.start_date.getFullYear() }}
+            <v-row>
+              <v-col>
+                {{ ctf.ctf_name }} {{ ctf.start_date.getFullYear() }}
+              </v-col>
+              <v-spacer/>
+              <v-col cols="auto" class="ma-auto">
+                <v-btn icon small
+                       v-if="loggedIn"
+                       @click="startCTFEdit(ctf)"
+                >
+                  <v-icon color="blue">mdi-pencil</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-card-title>
           <v-card-title v-else>
             That CTF does not exist.
@@ -294,6 +307,10 @@ export default class ChallengeListing extends Vue {
         challenge: JSON.stringify(challenge),
       },
     });
+  }
+
+  startCTFEdit(ctf: CTFEvent): void{
+    this.$router.push(`/ctfs/${ctf.event_id}/edit`);
   }
 
   deleteChallenge(challenge: Challenge): void {

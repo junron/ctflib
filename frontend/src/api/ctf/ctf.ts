@@ -12,6 +12,13 @@ export async function getCTFs(includeCTFTime = false): Promise<CTFEvent[]> {
   });
 }
 
+export async function getCTF(ctfId: number): Promise<CTFEvent> {
+  const response = await fetchJSON<CTFEvent>("/ctfs/get/" + ctfId);
+  response.data.start_date = new Date(response.data.start_date);
+  response.data.end_date = new Date(response.data.end_date);
+  return response.data;
+}
+
 export type CTFSeries = { name: string, organizer: string }
 
 export async function getCTFNames(): Promise<CTFSeries[]> {
@@ -26,4 +33,8 @@ export async function getChallenges(ctfID: number): Promise<Challenge[]> {
 
 export async function createCTF(ctf: CTFEvent): Promise<APIResponse<CTFEvent>> {
   return postJSON("/ctfs/create", ctf);
+}
+
+export async function editCTF(ctf: CTFEvent): Promise<APIResponse<CTFEvent>> {
+  return postJSON("/ctfs/edit/"+ctf.event_id, ctf);
 }

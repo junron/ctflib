@@ -62,6 +62,10 @@ router.post("/edit/:id", async (req: Request, res: Response, next: NextFunction)
   if (guide) {
     const newGuide = plainToInstance(Guide, req.body as Guide, {exposeDefaultValues: true});
     newGuide.post_id = guide.post_id;
+    const errors = await validate(newGuide);
+    if(errors.length > 0){
+      return res.validationFailure(errors);
+    }
     if (await res.handleRefViolation(guide.editGuide(newGuide), "category")) {
       return;
     }

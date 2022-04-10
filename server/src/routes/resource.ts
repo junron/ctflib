@@ -73,6 +73,10 @@ router.post("/edit/:id", async (req: Request, res: Response, next: NextFunction)
   if (resource) {
     const newResource = plainToInstance(Resource, req.body as Resource, {exposeDefaultValues: true});
     newResource.post_id = resource.post_id;
+    const errors = await validate(newResource);
+    if (errors.length > 0) {
+      return res.validationFailure(errors);
+    }
     if (await res.handleRefViolation(resource.editResource(newResource), "category")) {
       return;
     }

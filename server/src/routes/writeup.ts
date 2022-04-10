@@ -69,6 +69,10 @@ router.post("/edit/:writeupID", async (req: Request, res: Response, next: NextFu
     newWriteup.challenge_id = writeup.challenge_id;
     newWriteup.writeup_id = writeup.writeup_id;
     newWriteup.poster_username = writeup.poster_username;
+    const errors = await validate(newWriteup);
+    if (errors.length > 0) {
+      return res.validationFailure(errors);
+    }
     res.success("Writeup edited", await writeup.editWriteup(newWriteup));
   } else {
     res.failure("Writeup not found", "id");

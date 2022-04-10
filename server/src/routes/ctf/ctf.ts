@@ -44,6 +44,31 @@ router.post("/create", async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
+router.post("/edit/:id", async (req: Request, res: Response, next: NextFunction) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.failure("Invalid ID", "id");
+    return;
+  }
+  const ctf = await CTF.getCTFById(id);
+  if (ctf) {
+    const newCTF = plainToInstance(CTF, req.body as CTF, {exposeDefaultValues: true});
+    newCTF.start_date = new Date(newCTF.start_date);
+    newCTF.end_date = new Date(newCTF.end_date);
+    const errors = await validate(newCTF);
+    if(errors.length > 0){
+      return res.validationFailure(errors);
+    }
+    newCTF.event_id = ctf.event_id;
+    if (await res.handleRefViolation(ctf.editCTF(newCTF), "ctf_name")) {
+      return;
+    }
+    res.success("CTF edited", newCTF);
+  } else {
+    res.failure("CTF not found", "id");
+  }
+});
+
 router.use("/get/:ctfID/challenges", challengeRouter);
 
 export default router;
