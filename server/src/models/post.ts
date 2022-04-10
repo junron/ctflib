@@ -1,6 +1,6 @@
 import getConnection from "../database/connect";
 import {RowDataPacket} from "mysql2";
-import {Expose} from "class-transformer";
+import {Expose, Transform} from "class-transformer";
 import {IsBoolean, IsNumber, IsString} from "class-validator";
 import {Connection} from "mysql2/promise";
 
@@ -19,6 +19,7 @@ export class Post {
   title: string;
   @Expose()
   @IsBoolean()
+  @Transform(({ value }) => value == true)
   is_private: boolean = true;
   @IsString({each: true})
   tags: string[] = [];

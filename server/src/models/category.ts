@@ -1,6 +1,6 @@
 import getConnection from "../database/connect";
 import {RowDataPacket} from "mysql2";
-import {Expose} from "class-transformer";
+import {Expose, Transform} from "class-transformer";
 import {IsBoolean, IsString, ValidateIf} from "class-validator";
 
 export class Category {
@@ -19,6 +19,7 @@ export class Category {
   light_color: string | null = null;
   @Expose()
   @IsBoolean()
+  @Transform(({ value }) => value == true)
   is_major: boolean = false;
 
   constructor(name: string, icon: string, color: string, light_color: string | null = null, is_major: boolean = false) {

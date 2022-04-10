@@ -72,6 +72,7 @@ const app = express();
   app.use("/ctftime/edit", auth(true));
   app.use("/ctftime", ctftimeRoute);
 
+  app.use("/share", auth(false));
   app.use("/share", shareRoute);
   app.use("/writeups", auth(false));
   app.use("/writeups/create", auth(true));

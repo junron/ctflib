@@ -1,4 +1,4 @@
-import {Exclude, Expose, plainToInstance} from "class-transformer";
+import {Exclude, Expose, plainToInstance, Transform} from "class-transformer";
 import {IsBoolean, IsNumber, IsOptional, IsString} from "class-validator";
 
 import getConnection from "../database/connect";
@@ -28,6 +28,7 @@ export class Writeup {
   poster_username!: string;
   @Expose()
   @IsBoolean()
+  @Transform(({ value }) => value == true)
   is_private: boolean = true;
   @Expose()
   @IsOptional()
