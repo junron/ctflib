@@ -150,7 +150,7 @@
                   <v-chip
                       label
                       dark
-                      v-if="loggedIn && getChallengeWriteups(challenge).filter(w=>!w.url).length === 0"
+                      v-if="loggedIn"
                       color="deep-purple darken-3"
                       link
                       :href="`/#/ctfs/${challenge.event_id}/challenges/${challenge.challenge_id}/writeup/new`">
@@ -173,7 +173,7 @@
                   <v-chip
                       label
                       dark
-                      v-if="loggedIn && getChallengeWriteups(challenge).filter(w=>w.url).length === 0"
+                      v-if="loggedIn"
                       color="pink darken-3"
                       @click="newExtWriteup(challenge)">
                     <v-icon>mdi-plus</v-icon>

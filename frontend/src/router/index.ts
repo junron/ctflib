@@ -31,11 +31,6 @@ const routes: Array<RouteConfig> = [
     component: CTFListing,
   },
   {
-    path: "/contact",
-    name: "Contact",
-    component: Contact,
-  },
-  {
     path: "/new-post",
     name: "New Post",
     component: NewPost,
