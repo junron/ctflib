@@ -13,8 +13,8 @@
                   v-model="localCTF.ctf_name"
                   :items="ctfNames.map(ctf => ctf.name)"
                   label="CTF name"
-                  @input="errors['title'] = ''; setOrganizer()"
-                  :error-messages="errors['title']"
+                  @input="errors['name'] = ''; setOrganizer()"
+                  :error-messages="errors['name']"
                   :rules="[v => !!v || 'CTF name is required']"
                   :disabled="getEventId() > 0"
               />
@@ -59,6 +59,7 @@
               <v-col>
                 <v-text-field
                     v-model="localCTFTimeEvent.ctftime_id"
+                    :disabled="getEventId() > 0"
                     type="number"
                     label="CTFtime ID"
                     @input="errors['ctftime_id'] = ''"
@@ -199,7 +200,12 @@ import {CTFTimeEvent} from "@/types/ctfs/CTFTimeEvent";
 export default class CTFEditor extends Vue {
   valid = false
   lockOrganizer = false
-  errors = {}
+  errors: { [key: string]: string } = {
+    name: "",
+    organizer: "",
+    website: "",
+    ctftime_id: "",
+  }
 
   ctfNames: CTFSeries[] = []
 
@@ -299,31 +305,39 @@ export default class CTFEditor extends Vue {
       createCTFTimeEvent(this.makeCTFTimeEvent()).then((res) => {
         if (res.success) {
           this.back();
+        } else if (res.field) {
+          this.errors[res.field] = res.message;
         }
       });
     } else {
       createCTF(this.localCTF).then(res => {
-        if(res.success) {
+        if (res.success) {
           this.back();
+        } else if (res.field) {
+          this.errors[res.field] = res.message;
         }
       });
     }
   }
 
   editCTF(): void {
-        if (!this.start_date || !this.end_date) return;
+    if (!this.start_date || !this.end_date) return;
     this.localCTF.start_date = this.start_date;
     this.localCTF.end_date = this.end_date;
     if (this.hasCTFTimeEvent) {
       editCTFTimeEvent(this.makeCTFTimeEvent()).then((res) => {
         if (res.success) {
           this.back();
+        } else if (res.field) {
+          this.errors[res.field] = res.message;
         }
       });
     } else {
       editCTF(this.localCTF).then(res => {
-        if(res.success) {
+        if (res.success) {
           this.back();
+        } else if (res.field) {
+          this.errors[res.field] = res.message;
         }
       });
     }

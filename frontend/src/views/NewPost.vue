@@ -99,7 +99,9 @@ import {Resource} from "@/types/posts/resource";
 export default class NewPost extends Vue {
   valid = false
   success = false
-  errors = {}
+  errors: { [key: string]: string } = {
+    title: "",
+  }
 
   // Passed in as a string because vue router
   @Prop() public resource!: string | null;
@@ -114,14 +116,24 @@ export default class NewPost extends Vue {
 
   createResource(): void {
     createResource(this.localResource).then(response => {
-      this.success = response.success;
+      if (response.success) {
+        this.success = true;
+      } else if (response.field) {
+        this.errors[response.field] = response.message;
+        this.success = false;
+      }
     });
   }
 
   editResource(): void {
     editResource(this.localResource).then(response => {
-      this.success = response.success;
-      this.back();
+      if (response.success) {
+        this.success = true;
+        this.back();
+      } else if (response.field) {
+        this.errors[response.field] = response.message;
+        this.success = false;
+      }
     });
   }
 

@@ -5,11 +5,11 @@
         <v-col>
           <v-card-title v-if="ctf">
             <v-row>
-              <v-col>
+              <v-col cols="10" class="text-wrap">
                 {{ ctf.ctf_name }} {{ ctf.start_date.getFullYear() }}
               </v-col>
               <v-spacer/>
-              <v-col cols="auto" class="ma-auto">
+              <v-col cols="2" class="ma-auto" align="end">
                 <v-btn icon small
                        v-if="loggedIn"
                        @click="startCTFEdit(ctf)"
@@ -80,6 +80,20 @@
                     <v-col class="ma-auto">
                       <v-list-item-title>
                         {{ challenge.name }}
+                        <span class="ma-auto">
+                          <v-btn icon small
+                                 v-if="loggedIn"
+                                 @click="startChallengeEdit(challenge)"
+                          >
+                            <v-icon color="blue">mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn icon small
+                                 v-if="loggedIn"
+                                 @click="deleteChallenge(challenge)"
+                          >
+                            <v-icon color="red">mdi-delete</v-icon>
+                          </v-btn>
+                        </span>
                       </v-list-item-title>
                       <v-list-item-subtitle>
                         {{ challenge.points }} points
@@ -100,26 +114,10 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-row class="ma-4">
-                <v-col>
-                  <markdown-renderer
-                      max-width="100%"
-                      :content="challenge.description"
-                  />
-                </v-col>
-                <v-col cols="auto">
-                  <v-btn icon small
-                         v-if="loggedIn"
-                         @click="startChallengeEdit(challenge)"
-                  >
-                    <v-icon color="blue">mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn icon small
-                         v-if="loggedIn"
-                         @click="deleteChallenge(challenge)"
-                  >
-                    <v-icon color="red">mdi-delete</v-icon>
-                  </v-btn>
-                </v-col>
+                <markdown-renderer
+                    max-width="100%"
+                    :content="challenge.description"
+                />
               </v-row>
               <v-row class="ma-4" v-if="challenge.files.length > 0">
                 <v-col>
@@ -309,7 +307,7 @@ export default class ChallengeListing extends Vue {
     });
   }
 
-  startCTFEdit(ctf: CTFEvent): void{
+  startCTFEdit(ctf: CTFEvent): void {
     this.$router.push(`/ctfs/${ctf.event_id}/edit`);
   }
 

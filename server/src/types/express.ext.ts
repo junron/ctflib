@@ -20,6 +20,8 @@ declare global {
       handleDup(promise: Promise<any>, entity: string, field: string): Promise<boolean>;
 
       handleRefViolation(promise: Promise<any>, field: string): Promise<boolean>;
+
+      handleLengthViolation(promise: Promise<any>): Promise<boolean>;
     }
   }
 }
@@ -76,6 +78,22 @@ response.handleRefViolation = async function (promise: Promise<any>, field: stri
     const error = err as QueryError;
     if (error.code == 'ER_NO_REFERENCED_ROW_2') {
       this.failure(`That ${field} does not exist`, field);
+      return true;
+    }
+    throw err;
+  }
+};
+
+
+response.handleLengthViolation = async function (promise: Promise<any>): Promise<boolean> {
+  try {
+    await promise;
+    return false;
+  } catch (err) {
+    const error = err as QueryError;
+    if (error.code == 'ER_DATA_TOO_LONG') {
+      const field = error.message.split("'")[1];
+      this.failure(`The value for ${field} is too long.`, field);
       return true;
     }
     throw err;

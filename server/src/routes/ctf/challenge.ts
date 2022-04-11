@@ -57,7 +57,7 @@ router.post("/create", upload.array("files"), async (req: Request, res: Response
     if (files) {
       challenge.files = files.map(file => new ChallengeFile(file.originalname, file.mimetype, file.path));
     }
-    if (await res.handleRefViolation(challenge.create(), "category")) {
+    if (await res.handleLengthViolation(res.handleRefViolation(challenge.create(), "category"))) {
       return;
     }
     return res.success("Challenge created", challenge);
@@ -92,7 +92,7 @@ router.post("/edit/:chalID", upload.array("files"), async (req: Request, res: Re
   } else {
     newChallenge.files = [];
   }
-  if (await res.handleRefViolation(challenge.editChallenge(newChallengeEdit), "category")) {
+  if (await res.handleLengthViolation(res.handleRefViolation(challenge.editChallenge(newChallengeEdit), "category"))) {
     return;
   }
   return res.success("Challenge edited", newChallenge);

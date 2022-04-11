@@ -14,15 +14,22 @@
     <v-row class="mt-8">
       <v-col v-if="tab === 0 || tab === 2" class="pa-0 ma-0" :cols="tab===2?5:12">
         <v-textarea
-            auto-grow
+            class="v-textarea--auto-grow"
+            no-resize
             ref="textarea"
             v-model="localContent"
             :label="label"
-            @input="onInput"
             :error-messages="localError"
             :rules="[v => !!v || label + ' is required']"
             @drop="onDrop"
             @paste="onPaste"
+        />
+        <v-textarea
+            auto-grow
+            class="pa-3"
+            ref="textareaHidden"
+            style="visibility: hidden;position: absolute; width: 100%; height: 0; overflow: hidden"
+            v-model="localContent"
         />
       </v-col>
       <v-col cols="1"
@@ -55,6 +62,18 @@ import {upload} from "@/api/upload";
     content: function (val: string) {
       this.$data.localContent = val;
     },
+    localContent: function (val: string) {
+      const t = this as MarkdownEditor;
+      t.localError = "";
+      t.$emit("update:content", val);
+      t.resizeInput();
+    },
+  },
+  mounted() {
+    setTimeout(() => {
+      const t = this as MarkdownEditor;
+      t.resizeInput();
+    }, 1000);
   },
 })
 export default class MarkdownEditor extends Vue {
@@ -71,11 +90,7 @@ export default class MarkdownEditor extends Vue {
 
   $refs!: {
     textarea: InstanceType<typeof VTextarea>;
-  }
-
-  onInput(): void {
-    this.localError = "";
-    this.$emit("update:content", this.localContent);
+    textareaHidden: InstanceType<typeof VTextarea>;
   }
 
   onDrop(event: DragEvent): void {
@@ -105,9 +120,20 @@ export default class MarkdownEditor extends Vue {
         this.localContent = this.localContent.replace(
             `\n![${file.name}](Uploading to imgur...)\n`, "");
       }
-      this.onInput();
     });
   }
 
+  resizeInput(): void {
+    // Autogrowing textarea
+    const t1 = this.$refs.textarea;
+    const t2 = this.$refs.textareaHidden;
+    if (t1 && t2) {
+      const t1input = this.$refs.textarea.$refs.input as HTMLTextAreaElement;
+      const t2input = this.$refs.textareaHidden.$refs.input as HTMLTextAreaElement;
+      if (t1input && t2input) {
+        t1input.style.height = t2input.scrollHeight + "px";
+      }
+    }
+  }
 }
 </script>

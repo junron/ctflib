@@ -35,7 +35,7 @@ router.post("/create", async (req: Request, res: Response, next: NextFunction) =
   ctf.end_date = new Date(ctf.end_date);
   const errors = await validate(ctf);
   if (errors.length == 0) {
-    if (await res.handleRefViolation(ctf.create(), "ctf_name")) {
+    if (await res.handleLengthViolation(res.handleRefViolation(ctf.create(), "ctf_name"))) {
       return;
     }
     return res.success("CTF created", ctf);

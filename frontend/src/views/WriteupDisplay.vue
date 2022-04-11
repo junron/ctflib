@@ -1,9 +1,14 @@
 <template>
   <v-container :style="tab!==2 ? {'max-width': '960px'} : null">
     <v-card elevation="8" class="my-8">
-      <v-row>
-        <v-col class="mx-8">
-          <v-card-title v-if="challenge">
+      <v-row class="mx-lg-10 mx-2 py-4">
+        <v-col class="ma-auto" v-if="writeup" cols="1">
+          <v-icon :class="effectiveColor(categories.find(c=>c.name === challenge.category_name))">
+            mdi-{{ categories.find(c => c.name === challenge.category_name).icon }}
+          </v-icon>
+        </v-col>
+        <v-col cols="8">
+          <v-card-title v-if="challenge" class="py-0">
             <v-snackbar
                 v-model="snackbar"
                 :timeout="1500"
@@ -20,51 +25,53 @@
                 </v-btn>
               </template>
             </v-snackbar>
-            <v-icon :class="effectiveColor(categories.find(c=>c.name === challenge.category_name))">
-              mdi-{{ categories.find(c => c.name === challenge.category_name).icon }}
-            </v-icon>
-            &nbsp;
             {{ challenge.name }}
           </v-card-title>
           <v-card-title v-else>
             That challenge does not exist.
           </v-card-title>
-          <v-card-subtitle v-if="challenge">
-            By {{ ctf.organizer }} in
-            <a :href="'/#/ctfs/'+ctf.event_id">
-              {{ ctf.ctf_name }} {{ctf.start_date.getFullYear()}}
-            </a>,
-            {{ challenge.points }} points
-          </v-card-subtitle>
         </v-col>
         <v-spacer/>
         <v-col
-            class="mx-6 my-4" cols="auto"
+            class="ma-auto"
+            align="end"
+            cols="3"
+            v-if="!newWriteup()"
         >
           <v-btn icon small
-                 v-if="loggedIn && !newWriteup()"
+                 v-if="loggedIn"
                  :disabled="editingWriteup"
                  @click="editingWriteup = true; content= writeup.body"
           >
             <v-icon color="blue">mdi-pencil</v-icon>
           </v-btn>
           <v-btn icon small
-                 v-if="loggedIn && !newWriteup()"
+                 v-if="loggedIn"
                  :disabled="editingWriteup"
                  @click="deleteWriteup()"
           >
             <v-icon color="red">mdi-delete</v-icon>
           </v-btn>
           <v-btn icon
-                 v-if="!newWriteup()"
                  @click="share()"
           >
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col class="mx-8">
+      <v-row class="mx-lg-6">
+        <v-col>
+          <v-card-subtitle v-if="challenge">
+            By {{ ctf.organizer }} in
+            <a :href="'/#/ctfs/'+ctf.event_id">
+              {{ ctf.ctf_name }} {{ ctf.start_date.getFullYear() }}
+            </a>,
+            {{ challenge.points }} points
+          </v-card-subtitle>
+        </v-col>
+      </v-row>
+      <v-row class="mx-lg-6">
+        <v-col>
           <v-card-text v-if="challenge">
             <markdown-renderer
                 style="font-size: 1em"
@@ -76,7 +83,7 @@
       </v-row>
     </v-card>
     <v-card elevation="8" v-if="challenge">
-      <div class="pa-12" style="line-height: 2">
+      <div class="pa-lg-12 pa-4" style="line-height: 2">
         <v-switch
             v-if="newWriteup() || editingWriteup"
             v-model="is_private"

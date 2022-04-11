@@ -38,7 +38,7 @@ router.post("/create", async (req: Request, res: Response, next: NextFunction) =
   resource.poster_username = user.username;
   const errors = await validate(resource);
   if (errors.length == 0) {
-    if (await res.handleRefViolation(resource.createWithTransaction(), "category")) {
+    if (await res.handleLengthViolation(res.handleRefViolation(resource.createWithTransaction(), "category"))) {
       return;
     }
     return res.success("Resource created", resource);
@@ -77,7 +77,7 @@ router.post("/edit/:id", async (req: Request, res: Response, next: NextFunction)
     if (errors.length > 0) {
       return res.validationFailure(errors);
     }
-    if (await res.handleRefViolation(resource.editResource(newResource), "category")) {
+    if (await res.handleLengthViolation(res.handleRefViolation(resource.editResource(newResource), "category"))) {
       return;
     }
     res.success("Resource edited", newResource);

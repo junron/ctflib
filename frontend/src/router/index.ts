@@ -3,7 +3,6 @@ import VueRouter, {Route as BaseRoute, RouteConfig} from "vue-router";
 import MainContent from "@/views/MainContent.vue";
 import Login from "@/views/Login.vue";
 import CTFListing from "@/views/CTFListing.vue";
-import Contact from "@/views/Contact.vue";
 import NewPost from "@/views/NewPost.vue";
 import ChallengeListing from "@/views/ChallengeListing.vue";
 import WriteupDisplay from "@/views/WriteupDisplay.vue";

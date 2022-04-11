@@ -1,9 +1,14 @@
 <template>
   <v-container style="max-width: 960px">
     <v-card elevation="8" class="my-8">
-      <v-row>
-        <v-col class="mx-8">
-          <v-card-title v-if="guide">
+      <v-row class="mx-lg-10 mx-2 py-4">
+        <v-col class="ma-auto" v-if="guide" cols="1">
+          <v-icon :class="effectiveColor(categories.find(c=>c.name === guide.post_category))">
+            mdi-{{ categories.find(c => c.name === guide.post_category).icon }}
+          </v-icon>
+        </v-col>
+        <v-col cols="8">
+          <v-card-title v-if="guide" class="py-0">
             <v-snackbar
                 v-model="snackbar"
                 :timeout="1500"
@@ -20,30 +25,28 @@
                 </v-btn>
               </template>
             </v-snackbar>
-            <v-icon :class="effectiveColor(categories.find(c=>c.name === guide.post_category))">
-              mdi-{{ categories.find(c => c.name === guide.post_category).icon }}
-            </v-icon>
             &nbsp;
-            {{ guide.title }}
+            <span class="text-wrap">
+              {{ guide.title }}
+            </span>
           </v-card-title>
           <v-card-title v-else>
             That guide does not exist.
           </v-card-title>
-          <v-card-subtitle v-if="guide">
-            By {{ guide.poster_username }}
-            <span v-if="guide.series_id"> in {{ guide.series_name }}</span>
-          </v-card-subtitle>
         </v-col>
         <v-spacer/>
         <v-col
-            class="mx-6 my-4" cols="auto"
+            class="ma-auto"
+            align="end"
+            cols="3"
+            v-if="guide"
         >
-                    <v-btn icon small
-                           v-if="loggedIn"
-                           @click="$router.push(`/guides/${guide.post_id}/edit`)"
-                    >
-                      <v-icon color="blue">mdi-pencil</v-icon>
-                    </v-btn>
+          <v-btn icon small
+                 v-if="loggedIn"
+                 @click="$router.push(`/guides/${guide.post_id}/edit`)"
+          >
+            <v-icon color="blue">mdi-pencil</v-icon>
+          </v-btn>
           <v-btn icon
                  v-if="guide"
                  @click="share()"
@@ -52,8 +55,16 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col class="mx-8">
+      <v-row class="mx-lg-6">
+        <v-col>
+          <v-card-subtitle v-if="guide">
+            By {{ guide.poster_username }}
+            <span v-if="guide.series_id"> in {{ guide.series_name }}</span>
+          </v-card-subtitle>
+        </v-col>
+      </v-row>
+      <v-row class="mx-lg-6">
+        <v-col>
           <v-card-text v-if="guide">
             <markdown-renderer
                 style="font-size: 1em"
@@ -65,8 +76,8 @@
       </v-row>
     </v-card>
     <v-card elevation="8" v-if="guide">
-      <v-row class="px-12 py-4">
-        <v-col cols="auto">
+      <v-row class="px-lg-12 px-4 py-4">
+        <v-col cols="3">
           <v-btn
               color="primary"
               :disabled="!guide.prev"
@@ -75,10 +86,10 @@
             Prev
           </v-btn>
         </v-col>
-        <v-col class="ma-auto text-h6" cols="auto">
+        <v-col class="ma-auto text-h6 text-wrap" cols="6" align="center">
           {{ guide.series_name }}
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="3" align="end">
           <v-btn
               color="primary"
               :disabled="!guide.next"
@@ -88,14 +99,14 @@
           </v-btn>
         </v-col>
       </v-row>
-      <div class="px-12" style="line-height: 2">
+      <div class="px-lg-12 px-4" style="line-height: 2">
         <markdown-renderer
             max-width="100%"
             :content="guide.body"
         />
       </div>
-      <v-row class="px-12 py-4">
-        <v-col cols="auto">
+      <v-row class="px-lg-12 px-4 py-4">
+        <v-col cols="3">
           <v-btn
               color="primary"
               :disabled="!guide.prev"
@@ -104,10 +115,10 @@
             Prev
           </v-btn>
         </v-col>
-        <v-col class="ma-auto text-h6" cols="auto">
+        <v-col class="ma-auto text-h6 text-wrap" cols="6" align="center">
           {{ guide.series_name }}
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="3" align="end">
           <v-btn
               color="primary"
               :disabled="!guide.next"

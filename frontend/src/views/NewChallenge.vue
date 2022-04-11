@@ -12,8 +12,8 @@
               <v-text-field
                   v-model="localChallenge.name"
                   label="Challenge name"
-                  @input="errors['title'] = ''"
-                  :error-messages="errors['title']"
+                  @input="errors['name'] = ''"
+                  :error-messages="errors['name']"
                   :rules="[v => !!v || 'Challenge name is required']"
               />
             </v-col>
@@ -120,7 +120,9 @@ import {createChallenge, editChallenge} from "@/api/ctf/challenge";
 export default class NewChallenge extends Vue {
   valid = false
   files: File[] = []
-  errors = {}
+  errors: { [key: string]: string } = {
+    name: "",
+  }
 
   getCTFId(): number {
     return parseInt(this.$route.params.eventID);
@@ -142,6 +144,8 @@ export default class NewChallenge extends Vue {
     createChallenge(this.getCTFId(), this.localChallenge, this.files).then(response => {
       if (response.success) {
         this.back();
+      } else if (response.field) {
+        this.errors[response.field] = response.message;
       }
     });
   }
@@ -163,6 +167,8 @@ export default class NewChallenge extends Vue {
     ).then(response => {
       if (response.success) {
         this.back();
+      } else if (response.field) {
+        this.errors[response.field] = response.message;
       }
     });
   }

@@ -172,7 +172,9 @@ export default class GuideEditor extends Vue {
 
   private snackbar = false;
   private valid = false;
-  private errors = {};
+  private errors: { [key: string]: string } = {
+    title: "",
+  };
   private tab = 0;
 
   getGuideId(): number {
@@ -236,20 +238,28 @@ export default class GuideEditor extends Vue {
         this.guide.series_name = this.selectedSeries.text;
       }
     }
-    createGuide(this.guide).then((guide) => {
-      this.$router.replace(`/guides/${guide.data.post_id}`);
+    createGuide(this.guide).then((response) => {
+      if (response.success) {
+        this.$router.replace(`/guides/${response.data.post_id}`);
+      } else if (response.field) {
+        this.errors[response.field] = response.message;
+      }
     });
   }
 
   editGuide(): void {
     if (!this.guide) return;
-    editGuide(this.guide).then((guide) => {
-      this.$router.replace(`/guides/${guide.data.post_id}`);
+    editGuide(this.guide).then((response) => {
+      if (response.success) {
+        this.$router.replace(`/guides/${response.data.post_id}`);
+      } else if (response.field) {
+        this.errors[response.field] = response.message;
+      }
     });
   }
 
   back(): void {
-    if(this.guide?.post_id){
+    if (this.guide?.post_id) {
       this.$router.replace(`/guides/${this.guide.post_id}`);
       return;
     }

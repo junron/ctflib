@@ -43,7 +43,7 @@ router.post("/create", async (req: Request, res: Response, next: NextFunction) =
   guide.poster_username = user.username;
   const errors = await validate(guide);
   if (errors.length == 0) {
-    if (await res.handleRefViolation(guide.createWithTransaction(), "category")) {
+    if (await res.handleLengthViolation(res.handleRefViolation(guide.createWithTransaction(), "category"))) {
       return;
     }
     return res.success("Guide created", guide);
@@ -66,7 +66,7 @@ router.post("/edit/:id", async (req: Request, res: Response, next: NextFunction)
     if(errors.length > 0){
       return res.validationFailure(errors);
     }
-    if (await res.handleRefViolation(guide.editGuide(newGuide), "category")) {
+    if (await res.handleLengthViolation(res.handleRefViolation(guide.editGuide(newGuide), "category"))) {
       return;
     }
     res.success("Guide edited", newGuide);
