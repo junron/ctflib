@@ -28,7 +28,7 @@ export class Writeup {
   poster_username!: string;
   @Expose()
   @IsBoolean()
-  @Transform(({ value }) => value == true)
+  @Transform(({value}) => value == true)
   is_private: boolean = true;
   @Expose()
   @IsOptional()
@@ -88,20 +88,38 @@ export class Writeup {
     const connection = await getConnection();
     // Only internal writeups are searchable
     const queryString = `
-        select c.name, writeup_id, c.challenge_id, ce.ctf_name, writeup.poster_username, c.category_name, c.event_id
-        from writeup
-                 inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
-                 inner join challenge c on writeup.challenge_id = c.challenge_id
-                 left join challenge_tag ct on c.challenge_id = ct.challenge_id
-                 inner join ctf_event ce on c.event_id = ce.event_id
-        where (writeup.is_private = FALSE or ? = TRUE)
-          and (tag_name like ?
-            or c.name like ?
-            or iw.body like ?)
+        with writeups as (
+            select c.name,
+                   writeup_id,
+                   c.challenge_id,
+                   ce.ctf_name,
+                   writeup.poster_username,
+                   c.category_name,
+                   c.event_id,
+                   ct.tag_name,
+                   calculate_score(c.name, iw.body, '', '', tag_name, category_name, ?) as _score
+            from writeup
+                     inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
+                     inner join challenge c on writeup.challenge_id = c.challenge_id
+                     left join challenge_tag ct on c.challenge_id = ct.challenge_id
+                     inner join ctf_event ce on c.event_id = ce.event_id
+            where (writeup.is_private = FALSE or ? = TRUE)
+        )
+        select writeups.*,
+               _score + (
+                            select count(*)
+                            from writeups w
+                            where ? like concat('%', w.tag_name, '%')
+                              and w.writeup_id = writeups.writeup_id
+                        ) * 2
+                   as score
+        from writeups
+        where _score >= all (select _score from writeups w where w.writeup_id = writeups.writeup_id)
         group by writeup_id
-        order by writeup_id desc;`;
+        having score > 0
+        order by score desc;`;
     const [rows] = await connection.execute<RowDataPacket[]>(queryString,
-      [auth, `%${query}%`, `%${query}%`, `%${query}%`]);
+      [query, auth, query]);
     const challengeIDs = rows.map(row => row.challenge_id);
     if (challengeIDs.length === 0) {
       return [];

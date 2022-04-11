@@ -64,19 +64,42 @@ export class Resource extends Post {
 
   static async search(query: string, auth: boolean) {
     const connection = await getConnection();
-    const queryString = `SELECT post.*, r.body
-                         FROM post
-                                  inner join resource r on post.post_id = r.resource_id
-                                  left join post_tag on post_tag.post_id = post.post_id
-                         WHERE (is_private = false OR ? = true)
-                           AND (title LIKE ?
-                             OR post_category LIKE ?
-                             OR body LIKE ?
-                             OR tag_name LIKE ?)
-                         group by post.post_id;`;
+    const queryString = `
+        with posts as (
+            select post.post_id,
+                   post.title,
+                   post.post_category,
+                   resource.body,
+                   pt.tag_name,
+                   calculate_score(
+                           title,
+                           body,
+                           '','',
+                           tag_name,
+                           post_category,
+                           ?) as _score
+            from post
+                     inner join resource on resource_id = post.post_id
+                     left join post_tag pt on post.post_id = pt.post_id
+            where (is_private = false or ? = true)
+        )
+        select posts.*,
+               _score + (
+                            select count(*)
+                            from posts p
+                            where ? like concat('%', p.tag_name, '%')
+                              and p.post_id = posts.post_id
+                        ) * 3 # 3 points for every tag contained in the query text
+                   as score
+        from posts
+             # Only obtain the maximum score
+        where _score >= all (select _score from posts p where p.post_id = posts.post_id)
+        group by post_id
+        having score > 0
+        order by score desc;`;
     const [rows] = await connection.execute<RowDataPacket[]>(
       queryString,
-      [auth, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]
+      [query, auth, query]
     );
     return plainToInstance(Resource, await Post.getTags<Resource>(rows as Resource[]));
   }

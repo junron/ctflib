@@ -125,22 +125,39 @@ export class Guide extends Post {
 
   static async search(query: string, auth: boolean) {
     const connection = await getConnection();
-    const queryString = `SELECT post.*, description, body, g.series_id, guide_number, s.title as series_name
-                         FROM post
-                                  inner join guide g on post.post_id = g.guide_id
-                                  left join series s on g.series_id = s.series_id
-                                  left join post_tag on post_tag.post_id = post.post_id
-                         WHERE (is_private = false OR ? = true)
-                           AND (post.title LIKE ?
-                             OR post_category LIKE ?
-                             OR body LIKE ?
-                             OR description LIKE ?
-                             OR s.title LIKE ?
-                             OR tag_name LIKE ?)
-                         group by post.post_id;`;
+    const queryString = `
+        with guides as (SELECT post.*,
+                               description,
+                               body,
+                               g.series_id,
+                               guide_number,
+                               post_tag.tag_name,
+                               s.title                                as series_name,
+                               calculate_score(post.title, g.body, g.description, s.title, tag_name,
+                                               post.post_category, ?) as _score
+                        FROM post
+                                 inner join guide g on post.post_id = g.guide_id
+                                 left join series s on g.series_id = s.series_id
+                                 left join post_tag on post_tag.post_id = post.post_id
+                        WHERE (is_private = false OR ? = true)
+        )
+        select guides.*,
+               _score + (
+                            select count(*)
+                            from guides p
+                            where ? like concat('%', p.tag_name, '%')
+                              and p.post_id = guides.post_id
+                        ) * 3 # 3 points for every tag contained in the query text
+                   as score
+        from guides
+             # Only obtain the maximum score
+        where _score >= all (select _score from guides g where g.post_id = guides.post_id)
+        group by post_id
+        having score > 0
+        order by score desc;`;
     const [rows] = await connection.execute<RowDataPacket[]>(
       queryString,
-      [auth, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]
+      [query, auth, query]
     );
     return plainToInstance(Guide, await Post.getTags<Guide>(rows as Guide[]));
   }
