@@ -71,6 +71,7 @@ export class Resource extends Post {
                    post.post_category,
                    resource.body,
                    pt.tag_name,
+                   is_private,
                    calculate_score(
                            title,
                            body,
