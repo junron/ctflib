@@ -26,7 +26,7 @@
                     </v-tooltip>
 
                   </v-col>
-                  <v-col class="ma-auto text-wrap" :cols="post.is_private ? 8 : 9">
+                  <v-col class="ma-auto text-wrap" :cols="post.is_private ? 7 : 8">
                     {{ post.title }}
                   </v-col>
                   <v-col align="end" v-if="loggedIn" class="mx-auto" cols="3">
