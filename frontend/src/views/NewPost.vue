@@ -109,12 +109,14 @@ export default class NewPost extends Vue {
   private localResource: Resource = this.$props.resource ? JSON.parse(this.$props.resource) : {
     title: "",
     body: "",
+    poster_username: "",
     post_category: "",
     tags: [],
     is_private: true,
   }
 
   createResource(): void {
+    this.localResource.poster_username = "";
     createResource(this.localResource).then(response => {
       if (response.success) {
         this.success = true;
@@ -126,6 +128,7 @@ export default class NewPost extends Vue {
   }
 
   editResource(): void {
+    this.localResource.poster_username = "";
     editResource(this.localResource).then(response => {
       if (response.success) {
         this.success = true;

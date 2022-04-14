@@ -23,6 +23,7 @@
             :rules="[v => !!v || label + ' is required']"
             @drop="onDrop"
             @paste="onPaste"
+            @input="resizeInput"
         />
         <v-textarea
             auto-grow
@@ -62,11 +63,14 @@ import {upload} from "@/api/upload";
     content: function (val: string) {
       this.$data.localContent = val;
     },
-    localContent: function (val: string) {
-      const t = this as MarkdownEditor;
-      t.localError = "";
-      t.$emit("update:content", val);
-      t.resizeInput();
+    localContent: {
+      handler: function (val: string) {
+        const t = this as MarkdownEditor;
+        t.localError = "";
+        t.$emit("update:content", val);
+        t.resizeInput();
+      },
+      immediate: true,
     },
   },
   mounted() {
@@ -131,7 +135,7 @@ export default class MarkdownEditor extends Vue {
       const t1input = this.$refs.textarea.$refs.input as HTMLTextAreaElement;
       const t2input = this.$refs.textareaHidden.$refs.input as HTMLTextAreaElement;
       if (t1input && t2input) {
-        t1input.style.height = t2input.scrollHeight + "px";
+        t1input.style.height = (t2input.scrollHeight + 100) + "px";
       }
     }
   }

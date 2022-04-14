@@ -83,19 +83,6 @@ export class Post {
     }
     return posts;
   }
-
-  static async getAllTags(category: string, auth: boolean): Promise<string[]> {
-    const connection = await getConnection();
-    const [tags] = await connection.query<RowDataPacket[]>(
-      `SELECT distinct tag_name
-       from post_tag,
-            post
-       where post.post_id = post_tag.post_id
-         and post_category = ?
-         and (is_private = false or ? = true)`, [category, auth]);
-    return tags.map(tag => tag.tag_name);
-  }
-
   async deletePost(_connection?: Connection) {
     const connection = _connection ?? await getConnection();
     const query = "DELETE FROM post WHERE post_id = ?";
