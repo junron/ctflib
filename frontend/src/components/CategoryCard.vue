@@ -15,7 +15,7 @@
             <v-list-item-content>
               <v-list-item-title class="py-2">
                 <v-row>
-                  <v-col v-if="post.is_private" cols="1" class="mx-auto">
+                  <v-col v-if="post.is_private" cols="1" class="my-auto">
                     <v-tooltip top>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon small color="yellow accent-4" v-bind="attrs"
@@ -26,7 +26,7 @@
                     </v-tooltip>
 
                   </v-col>
-                  <v-col class="ma-auto text-wrap" :cols="post.is_private ? 7 : 8">
+                  <v-col class="my-auto text-wrap" :cols="loggedIn? (post.is_private?8:9): 'auto'">
                     {{ post.title }}
                   </v-col>
                   <v-col align="end" v-if="loggedIn" class="mx-auto" cols="3">
