@@ -54,7 +54,7 @@
         :query="query"
     />
     <v-btn
-        v-if="tab === 0"
+        v-if="loggedIn && tab === 0"
         fab
         fixed
         bottom
@@ -65,7 +65,7 @@
       <v-icon>mdi-plus</v-icon>
     </v-btn>
     <v-btn
-        v-if="tab === 2"
+        v-if="loggedIn && tab === 2"
         fab
         fixed
         bottom

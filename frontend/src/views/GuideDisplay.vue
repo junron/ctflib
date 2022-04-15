@@ -76,7 +76,7 @@
       </v-row>
     </v-card>
     <v-card elevation="8" v-if="guide">
-      <v-row class="px-lg-12 px-4 py-4">
+      <v-row class="px-lg-12 px-4 py-4" v-if="guide.series_id">
         <v-col cols="3">
           <v-btn
               color="primary"
@@ -105,7 +105,7 @@
             :content="guide.body"
         />
       </div>
-      <v-row class="px-lg-12 px-4 py-4">
+      <v-row class="px-lg-12 px-4 py-4" v-if="guide.series_id">
         <v-col cols="3">
           <v-btn
               color="primary"
