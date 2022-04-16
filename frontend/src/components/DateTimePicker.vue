@@ -69,8 +69,9 @@ import {Prop} from "vue-property-decorator";
         if (!newDatetime) {
           return;
         }
-        this.$data.localDatetime = newDatetime.toLocaleDateString() + " " + newDatetime.toLocaleTimeString();
-        const dateTimeStrings = (this as DateTimePicker).getDateTimeStrings(newDatetime);
+        const t = this as DateTimePicker;
+        this.$data.localDatetime = t.dateString(newDatetime) + " " + t.timeString(newDatetime);
+        const dateTimeStrings = t.getDateTimeStrings(newDatetime);
         this.$data.localDateString = dateTimeStrings[0];
         this.$data.localTimeString = dateTimeStrings[1];
       },
@@ -83,11 +84,22 @@ export default class DateTimePicker extends Vue {
   @Prop() public after!: Date | null;
   @Prop() public before!: Date | null;
 
-  private localDatetime = !this.datetime ? "" : (this.datetime?.toLocaleDateString() + " " + this.datetime?.toLocaleTimeString());
+  private localDatetime = !this.datetime ? "" : (this.dateString(this.datetime) + " " + this.timeString(this.datetime));
   private localDateString = this.getDateTimeStrings(this.datetime)[0];
   private localTimeString = this.getDateTimeStrings(this.datetime)[1];
   private valid = false;
   private dialog = false;
+
+  dateString(date: Date | null): string {
+    if (!date) return "";
+    return date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, "0") + "-"
+        + date.getDate().toString().padStart(2, "0");
+  }
+
+  timeString(date: Date | null): string {
+    if (!date) return "";
+    return date.getHours().toString().padStart(2, "0") + ":" + date.getMinutes().toString().padStart(2, "0") + ":00";
+  }
 
   validDate(): string | true {
     if (new Date(this.localDatetime).toString() === "Invalid Date") {
@@ -111,9 +123,8 @@ export default class DateTimePicker extends Vue {
 
 
   saveNew(): void {
-    const timezone = new Date().toLocaleString("sv", {timeZoneName: "short"}).substr(-5);
-    const newDatetime = new Date(`${this.localDateString} ${this.localTimeString} ${timezone}`);
-    this.$data.localDatetime = newDatetime.toLocaleDateString() + " " + newDatetime.toLocaleTimeString();
+    const newDatetime = new Date(`${this.localDateString} ${this.localTimeString}`);
+    this.$data.localDatetime = this.dateString(newDatetime) + " " + this.timeString(newDatetime);
     this.$emit("update:datetime", newDatetime);
     this.dialog = false;
   }

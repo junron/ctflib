@@ -12,7 +12,7 @@
       </v-tabs>
     </v-row>
     <v-row class="mt-8">
-      <v-col v-if="tab === 0 || tab === 2" class="pa-0 ma-0" :cols="tab===2?5:12">
+      <v-col v-show="tab === 0 || tab === 2" class="pa-0 ma-0" :cols="tab===2?5:12">
         <v-textarea
             class="v-textarea--auto-grow"
             no-resize
