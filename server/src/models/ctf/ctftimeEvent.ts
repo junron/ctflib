@@ -38,6 +38,28 @@ export class CTFTimeEvent extends CTF {
   @IsString()
   image_url!: string;
 
+  constructor(ctf_name: string,
+              start_date: Date,
+              end_date: Date,
+              website: string,
+              organizer: string,
+              ctftime_id: number,
+              winner_score: number|undefined,
+              num_teams: number|undefined,
+              score: number|undefined,
+              ranking: number|undefined,
+              weight: number|undefined,
+              image_url: string) {
+    super(ctf_name, start_date, end_date, website, organizer);
+    this.ctftime_id = ctftime_id;
+    this.winner_score = winner_score;
+    this.num_teams = num_teams;
+    this.score = score;
+    this.ranking = ranking;
+    this.weight = weight;
+    this.image_url = image_url;
+  }
+
   static async getCTFTimeEvents(): Promise<CTFTimeEvent[]> {
     const connection: Connection = await getConnection();
     const [rows]: [RowDataPacket[], any] = await connection.execute(

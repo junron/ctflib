@@ -54,9 +54,11 @@ import {getCategories} from "@/api/category";
   mounted() {
     this.$vuetify.theme.dark = this.darkMode;
     me().then(response => {
+      console.log(response);
       if (response.success) {
         this.$store.dispatch("login", response.data.username);
       } else {
+        this.$store.dispatch("logout");
         // Already logged out
         if (response.message === "No token provided") return;
         this.logout();

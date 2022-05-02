@@ -26,3 +26,7 @@ export async function createCTFTimeEvent(ctf: Partial<CTFTimeEvent>): Promise<AP
 export async function editCTFTimeEvent(ctf: Partial<CTFTimeEvent>): Promise<APIResponse<CTFTimeEvent>> {
   return postJSON("/ctftime/edit/" + ctf.event_id, ctf);
 }
+
+export async function scrapeCTFTimeEvent(id: number): Promise<APIResponse<CTFTimeEvent>> {
+  return fetchJSON<CTFTimeEvent>("/scrape/" + id);
+}

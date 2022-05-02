@@ -19,6 +19,7 @@ import shareRoute from "./routes/share";
 import uploadRoute from "./routes/upload";
 import serveRoute from "./routes/serve";
 import writeupRoute from "./routes/writeup";
+import scrapeRoute from "./routes/scrape";
 
 
 const app = express();
@@ -83,6 +84,9 @@ const app = express();
   app.use("/upload", auth(true));
   app.use("/upload", uploadRoute);
   app.use("/files", serveRoute);
+
+  app.use("/scrape", auth(true));
+  app.use("/scrape", scrapeRoute);
 
 
   app.get("/", (req: express.Request, res: express.Response, next: NextFunction) => {

@@ -28,6 +28,14 @@ export class CTF {
   @IsString()
   organizer: string = "";
 
+  constructor(ctf_name: string, start_date: Date, end_date: Date, website: string, organizer: string) {
+    this.ctf_name = ctf_name;
+    this.start_date = start_date;
+    this.end_date = end_date;
+    this.website = website;
+    this.organizer = organizer;
+  }
+
   static async getCTFs(includeCTFTime: boolean): Promise<CTF[]> {
     const connection: Connection = await getConnection();
     let query = "SELECT * FROM ctf_event inner join ctf_series cs on ctf_event.ctf_name = cs.name";

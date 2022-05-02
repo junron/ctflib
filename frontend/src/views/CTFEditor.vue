@@ -65,6 +65,8 @@
                     @input="errors['ctftime_id'] = ''"
                     :error-messages="errors['ctftime_id']"
                     :rules="[v=> !!v || 'CTFtime ID is required', v=> v>0 || 'CTFtime ID must be positive']"
+                    append-icon="mdi-reload"
+                    @click:append="scrapeCTFTimeEvent"
                 />
               </v-col>
               <v-col>
@@ -166,7 +168,7 @@ import Component from "vue-class-component";
 import {CTFEvent} from "@/types/ctfs/CTFEvent";
 import {createCTF, CTFSeries, editCTF, getCTF, getCTFNames} from "@/api/ctf/ctf";
 import DateTimePicker from "@/components/DateTimePicker.vue";
-import {createCTFTimeEvent, editCTFTimeEvent, getCTFTimeEvent} from "@/api/ctf/ctftime";
+import {createCTFTimeEvent, editCTFTimeEvent, getCTFTimeEvent, scrapeCTFTimeEvent} from "@/api/ctf/ctftime";
 import {CTFTimeEvent} from "@/types/ctfs/CTFTimeEvent";
 
 @Component({
@@ -295,6 +297,23 @@ export default class CTFEditor extends Vue {
       image_url: this.localCTFTimeEvent.image_url,
       ...this.localCTF,
     };
+  }
+
+  scrapeCTFTimeEvent() : void{
+    const id = this.localCTFTimeEvent.ctftime_id;
+    if (id == null) return;
+    scrapeCTFTimeEvent(id).then(response => {
+      if(response.success){
+        this.localCTFTimeEvent = response.data;
+        this.localCTF.ctf_name = response.data.ctf_name;
+        this.localCTF.organizer = response.data.organizer;
+        this.localCTF.website = response.data.website;
+        this.start_date = new Date(response.data.start_date);
+        this.end_date = new Date(response.data.end_date);
+      }else{
+        console.log(response);
+      }
+    });
   }
 
   createCTF(): void {
