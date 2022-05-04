@@ -131,6 +131,9 @@
                 :error-messages="errors['image_url']"
                 :rules="[v => !!v || 'Image URL is required', validateUrl]"
             />
+            <v-row class="mb-2">
+              <v-col> CTFTime rating points: {{ ctfTimePoints }}</v-col>
+            </v-row>
           </div>
           <!-- Button for saving edited CTF -->
           <v-btn
@@ -176,6 +179,16 @@ import {CTFTimeEvent} from "@/types/ctfs/CTFTimeEvent";
   components: {
     DateTimePicker,
   },
+  watch: {
+    localCTFTimeEvent: {
+      handler(newValue, oldValue) {
+        const pc = newValue.score / newValue.winner_score;
+        const ratingPoints = ((pc + 1 / newValue.ranking) * newValue.weight) / (1 / (1 + newValue.ranking / newValue.num_teams));
+        (this as CTFEditor).ctfTimePoints = ratingPoints;
+      },
+      deep: true,
+    },
+  },
   mounted() {
     getCTFNames().then(res => {
       this.$data.ctfNames = res;
@@ -215,6 +228,7 @@ export default class CTFEditor extends Vue {
   end_date: Date | null = null;
 
   hasCTFTimeEvent = false;
+  ctfTimePoints = 0
 
   getEventId(): number {
     return parseInt(this.$route.params.id);
@@ -299,18 +313,18 @@ export default class CTFEditor extends Vue {
     };
   }
 
-  scrapeCTFTimeEvent() : void{
+  scrapeCTFTimeEvent(): void {
     const id = this.localCTFTimeEvent.ctftime_id;
     if (id == null) return;
     scrapeCTFTimeEvent(id).then(response => {
-      if(response.success){
+      if (response.success) {
         this.localCTFTimeEvent = response.data;
         this.localCTF.ctf_name = response.data.ctf_name;
         this.localCTF.organizer = response.data.organizer;
         this.localCTF.website = response.data.website;
         this.start_date = new Date(response.data.start_date);
         this.end_date = new Date(response.data.end_date);
-      }else{
+      } else {
         console.log(response);
       }
     });
