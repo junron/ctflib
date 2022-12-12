@@ -39,7 +39,7 @@ export class Writeup {
   @IsString()
   body: string | null = null;
 
-  static async getWriteupByID(id: number, auth: boolean): Promise<Writeup> {
+  static async getWriteupByID(id: number, auth: boolean): Promise<Writeup|null> {
     const connection = await getConnection();
     const [writeups] = await connection.query<RowDataPacket[]>(
       `SELECT writeup_id, challenge_id, poster_username, is_private, body, url
@@ -51,7 +51,7 @@ export class Writeup {
            or ? = TRUE)`,
       [id, auth]);
     if (writeups.length === 0) {
-      throw new Error("Writeup not found");
+      return null;
     }
     return plainToInstance(Writeup, writeups[0], {exposeDefaultValues: true});
   }
