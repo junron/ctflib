@@ -3,6 +3,7 @@ import {Writeup} from "../models/writeup";
 import {Challenge} from "../models/challenge/challenge";
 import {plainToInstance} from "class-transformer";
 import {validate} from "class-validator";
+import {exportAndBuildWriteups} from "../util";
 
 const router = require('express').Router({mergeParams: true});
 
@@ -33,6 +34,7 @@ router.post("/create", async (req: Request, res: Response, next: NextFunction) =
     if (challenge) {
       writeup.challenge_id = challenge.challenge_id;
       await writeup.createWithTransaction();
+      await exportAndBuildWriteups();
       return res.success("Writeup created", writeup);
     } else {
       res.failure("CTF not found", "id");
@@ -51,6 +53,7 @@ router.delete("/delete/:writeupID", async (req: Request, res: Response, next: Ne
   const writeup = await Writeup.getWriteupByID(id, req.auth);
   if (writeup) {
     await writeup.deleteWriteup();
+    await exportAndBuildWriteups();
     res.success("Writeup deleted", writeup);
   } else {
     res.failure("Writeup not found", "id");
@@ -73,6 +76,7 @@ router.post("/edit/:writeupID", async (req: Request, res: Response, next: NextFu
     if (errors.length > 0) {
       return res.validationFailure(errors);
     }
+    await exportAndBuildWriteups();
     res.success("Writeup edited", await writeup.editWriteup(newWriteup));
   } else {
     res.failure("Writeup not found", "id");

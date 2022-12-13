@@ -2,10 +2,8 @@ import getConnection from "./connect";
 import * as fs from "fs/promises";
 import {RowDataPacket} from "mysql2";
 import {Connection} from "mysql2/promise";
-import {safeUnlink} from "../util";
+import {exportAndBuildWriteups, safeUnlink} from "../util";
 import * as path from "path";
-import {Writeup} from "../models/writeup";
-import config from "../config";
 
 function getMigrations(): Promise<string[]> {
   return fs.readdir("./migrations/");
@@ -55,13 +53,6 @@ export async function init() {
     console.log("Migration failed: " + e);
     process.exit(-1);
   }
-  const writeups = await Writeup.exportWriteups();
-
-  await Promise.all(writeups.map(writeup => {
-    const filePath = config.writeups_dir + writeup.path;
-    return fs.mkdir(path.dirname(filePath)).catch(() => null).finally(() => {
-      return fs.writeFile(filePath, writeup.markdown);
-    });
-  }));
+  await exportAndBuildWriteups();
   console.log("Backed up writeups");
 }

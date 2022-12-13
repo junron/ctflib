@@ -1,4 +1,8 @@
 import * as fs from "fs/promises";
+import {Writeup} from "./models/writeup";
+import config from "./config";
+import path from "path";
+import * as child_process from "child_process";
 
 export function jsonOrNull(json: string): any | null {
   try {
@@ -18,4 +22,23 @@ export async function safeUnlink(path: string): Promise<void> {
 
 export function slugify(x: string) {
   return x.toLowerCase().trim().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+}
+
+export async function exportAndBuildWriteups() {
+  const writeups = await Writeup.exportWriteups();
+
+  await Promise.all(writeups.map(writeup => {
+    const filePath = config.writeups_dir + writeup.path;
+    return fs.mkdir(path.dirname(filePath)).catch(() => null).finally(() => {
+      return fs.writeFile(filePath, writeup.markdown);
+    });
+  }));
+
+  const child = child_process.spawn("vitepress", ["build", "blog"], {
+    cwd: path.join(config.writeups_dir, "../..")
+  });
+  child.on("error", function (err) {
+    console.log("Error", err);
+  });
+
 }
