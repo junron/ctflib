@@ -3,6 +3,8 @@ import {IsBoolean, IsNumber, IsOptional, IsString} from "class-validator";
 
 import getConnection from "../database/connect";
 import {RowDataPacket} from "mysql2";
+import {ExportedWriteup} from "../types/exported-writeup";
+import {slugify} from "../util";
 
 export type WriteupSearchResult = {
   writeup_id: number;
@@ -39,7 +41,7 @@ export class Writeup {
   @IsString()
   body: string | null = null;
 
-  static async getWriteupByID(id: number, auth: boolean): Promise<Writeup|null> {
+  static async getWriteupByID(id: number, auth: boolean): Promise<Writeup | null> {
     const connection = await getConnection();
     const [writeups] = await connection.query<RowDataPacket[]>(
       `SELECT writeup_id, challenge_id, poster_username, is_private, body, url
@@ -88,30 +90,26 @@ export class Writeup {
     const connection = await getConnection();
     // Only internal writeups are searchable
     const queryString = `
-        with writeups as (
-            select c.name,
-                   writeup_id,
-                   c.challenge_id,
-                   ce.ctf_name,
-                   writeup.poster_username,
-                   c.category_name,
-                   c.event_id,
-                   ct.tag_name,
-                   calculate_score(c.name, iw.body, '', '', tag_name, category_name, ?) as _score
-            from writeup
-                     inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
-                     inner join challenge c on writeup.challenge_id = c.challenge_id
-                     left join challenge_tag ct on c.challenge_id = ct.challenge_id
-                     inner join ctf_event ce on c.event_id = ce.event_id
-            where (writeup.is_private = FALSE or ? = TRUE)
-        )
+        with writeups as (select c.name,
+                                 writeup_id,
+                                 c.challenge_id,
+                                 ce.ctf_name,
+                                 writeup.poster_username,
+                                 c.category_name,
+                                 c.event_id,
+                                 ct.tag_name,
+                                 calculate_score(c.name, iw.body, '', '', tag_name, category_name, ?) as _score
+                          from writeup
+                                   inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
+                                   inner join challenge c on writeup.challenge_id = c.challenge_id
+                                   left join challenge_tag ct on c.challenge_id = ct.challenge_id
+                                   inner join ctf_event ce on c.event_id = ce.event_id
+                          where (writeup.is_private = FALSE or ? = TRUE))
         select writeups.*,
-               _score + (
-                            select count(*)
-                            from writeups w
-                            where ? like concat('%', w.tag_name, '%')
-                              and w.writeup_id = writeups.writeup_id
-                        ) * 2
+               _score + (select count(*)
+                         from writeups w
+                         where ? like concat('%', w.tag_name, '%')
+                           and w.writeup_id = writeups.writeup_id) * 2
                    as score
         from writeups
         where _score >= all (select _score from writeups w where w.writeup_id = writeups.writeup_id)
@@ -187,5 +185,89 @@ export class Writeup {
       await connection.rollback();
       throw e;
     }
+  }
+
+
+  static async exportWriteups(): Promise<ExportedWriteup[]> {
+    const connection = await getConnection();
+    const [writeups] = await connection.query<RowDataPacket[]>(`
+        SELECT c.category_name,
+               c.description,
+               c.points,
+               c.name,
+               ce.ctf_name,
+               ce.start_date,
+               body,
+               c.challenge_id
+        FROM writeup
+                 inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
+                 inner join challenge c on writeup.challenge_id = c.challenge_id
+                 inner join ctf_event ce on c.event_id = ce.event_id
+        where is_private = false`);
+    const [challengeFiles] = await connection.query<RowDataPacket[]>(`
+        select cf.challenge_id, cf.file_id, cf.file_name
+        from challenge
+                 inner join challenge_file cf on challenge.challenge_id = cf.challenge_id
+        where cf.challenge_id in (?)`, [writeups.map(a => a.challenge_id)]);
+
+    const groupedByCat = writeups.reduce((acc, curr) => {
+      const cat = curr.category_name.toLowerCase();
+      if (acc.has(cat)) {
+        acc.get(cat)?.push(curr);
+      } else {
+        acc.set(cat, [curr]);
+      }
+      return acc;
+    }, new Map<string, RowDataPacket[]>());
+
+
+    const categoryFiles = Array.from(groupedByCat.entries()).map(([key, value]) => {
+      return {
+        markdown: `---
+layout: home
+
+title: ${key}
+
+hero:
+  name: ${key}
+  tagline: "Here's some of my ${key} writeups:"
+
+features:
+` + value.reverse().map(writeup => {
+          const cleanedDescription = writeup.description.replace(/nc .* \d{2,5}/g, "")
+            .replaceAll("\n", " ")
+            .replaceAll("\r", "")
+            .replaceAll("`", "")
+            .replaceAll('"', '\\"');
+          return `
+  - title: "${writeup.name.replaceAll('"', '\\"')}"
+    details: "${cleanedDescription}"
+    link: /writeups/${key}/${slugify(writeup.name)}.html
+    linkText: Read writeup`;
+        }).join("\n"),
+        path: `/${key}.md`
+      };
+    });
+
+    return categoryFiles.concat(writeups.map(writeup => {
+      const slug = slugify(writeup.name);
+      const files = challengeFiles.filter(file => file.challenge_id == writeup.challenge_id);
+      const filesMd = files.length ? "Challenge files: " + files.map(
+        file => `[${file.file_name}](https://api.ctflib.junron.dev/files/${file.file_id})`
+      ).join(" ") : "";
+      return {
+        path: `/${writeup.category_name.toLowerCase()}/${slug}.md`,
+        markdown: `
+        # ${writeup.name}
+        In ${writeup.ctf_name} ${new Date(writeup.start_date).getFullYear()}, ${writeup.points} points  
+        ${writeup.description.length ? ">" : ""} ${writeup.description.split("\n").join("\n> ")}   
+        
+        ${filesMd}
+        \n`.split("\n").map(a => a.trim()).join("\n") + writeup.body
+          .replaceAll("```c++", "```cpp")
+          .replaceAll("```assembly", "```asm")
+          .replaceAll("```xml-dtd", "```xml")
+      };
+    }));
   }
 }

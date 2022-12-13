@@ -15,3 +15,7 @@ export async function safeUnlink(path: string): Promise<void> {
     // ignore
   }
 }
+
+export function slugify(x: string) {
+  return x.toLowerCase().trim().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+}
