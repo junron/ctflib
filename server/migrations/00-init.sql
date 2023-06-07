@@ -156,13 +156,6 @@ create table if not exists guide
     foreign key (series_id) references series (series_id) on delete set null on update cascade
 );
 
-create trigger rating_points
-    before insert
-    on ctftime_event
-    for each row
-    set new.rating_points = (((new.score / new.winner_score) + (1 / new.ranking)) * new.weight) /
-                            (1 / (1 + new.ranking / new.num_teams));
-
 INSERT INTO user (username, email, github_username, password_hash)
 VALUES ('jro', 'junron1@outlook.com', 'junron',
         'dab8cb04b569b6e102b84e1123b42ad9b38165e0074607e7abeb7ad0a6423f8926817c5d44df01d59298c1fa8290b6dbf5ccd0eed0ee14d57a5f29028a2d430b.c6a39fee5a464ed544d0d11bb78f4a10');

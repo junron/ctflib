@@ -44,11 +44,11 @@ export class CTFTimeEvent extends CTF {
               website: string,
               organizer: string,
               ctftime_id: number,
-              winner_score: number|undefined,
-              num_teams: number|undefined,
-              score: number|undefined,
-              ranking: number|undefined,
-              weight: number|undefined,
+              winner_score: number | undefined,
+              num_teams: number | undefined,
+              score: number | undefined,
+              ranking: number | undefined,
+              weight: number | undefined,
               image_url: string) {
     super(ctf_name, start_date, end_date, website, organizer);
     this.ctftime_id = ctftime_id;
@@ -86,12 +86,13 @@ export class CTFTimeEvent extends CTF {
     await connection.beginTransaction();
     try {
       await super.create(connection);
-      await connection.execute(`INSERT INTO ctftime_event (event_id, ctftime_id, winner_score, num_teams, score,
-                                                           ranking, weight,
-                                                           image_url)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
-        this.event_id, this.ctftime_id, this.winner_score, this.num_teams, this.score, this.ranking, this.weight, this.image_url
-      ].map(value => value === undefined ? null : value));
+      console.log(this.calculateRatingPoints());
+      await connection.execute(
+        `INSERT INTO ctftime_event (event_id, ctftime_id, winner_score, num_teams, score,
+                                    ranking, weight,
+                                    image_url, rating_points)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [this.event_id, this.ctftime_id, this.winner_score, this.num_teams, this.score, this.ranking, this.weight, this.image_url, this.calculateRatingPoints()].map(value => value === undefined ? null : value));
       await connection.commit();
     } catch (e) {
       await connection.rollback();
@@ -106,12 +107,13 @@ export class CTFTimeEvent extends CTF {
       await this.editCTF(newCTFTimeEvent, connection);
       await connection.query(
         `UPDATE ctftime_event
-         SET winner_score = ?,
-             num_teams    = ?,
-             score        = ?,
-             ranking      = ?,
-             weight       = ?,
-             image_url    = ?
+         SET winner_score  = ?,
+             num_teams     = ?,
+             score         = ?,
+             ranking       = ?,
+             weight        = ?,
+             image_url     = ?,
+             rating_points = ?
          WHERE event_id = ?`,
         [
           newCTFTimeEvent.winner_score,
@@ -120,6 +122,7 @@ export class CTFTimeEvent extends CTF {
           newCTFTimeEvent.ranking,
           newCTFTimeEvent.weight,
           newCTFTimeEvent.image_url,
+          newCTFTimeEvent.calculateRatingPoints(),
           newCTFTimeEvent.event_id
         ].map(value => value === undefined ? null : value));
       await connection.commit();
@@ -127,5 +130,12 @@ export class CTFTimeEvent extends CTF {
       await connection.rollback();
       throw e;
     }
+  }
+
+  private calculateRatingPoints() {
+    if (!this.score || !this.winner_score || !this.ranking || !this.weight || !this.num_teams) {
+      return 0;
+    }
+    return (((this.score / this.winner_score) + (1 / this.ranking)) * this.weight) / (1 / (1 + this.ranking / this.num_teams));
   }
 }

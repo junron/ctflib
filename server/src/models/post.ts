@@ -109,4 +109,20 @@ export class Post {
     }
   }
 
+  calculate_score(search: string){
+    search = search.toLowerCase();
+    let score = 0;
+    if (search == this.post_category.toLowerCase() || search.includes(this.post_category.toLowerCase())){
+      score += 10;
+    }
+    for(const tag of this.tags){
+      if (search.includes(tag.toLowerCase())){
+        score += 3;
+      }
+    }
+    if(this.title.includes(search)){
+      score += 5;
+    }
+    return score;
+  }
 }

@@ -3,6 +3,7 @@ import {Expose, plainToInstance} from "class-transformer";
 import {IsNumber, IsOptional, IsString} from "class-validator";
 import getConnection from "../database/connect";
 import {RowDataPacket} from "mysql2";
+import {query} from "express";
 
 export class Guide extends Post {
   @Expose()
@@ -125,41 +126,23 @@ export class Guide extends Post {
 
   static async search(query: string, auth: boolean) {
     const connection = await getConnection();
-    const queryString = `
-        with guides as (SELECT post.*,
-                               description,
-                               body,
-                               g.series_id,
-                               guide_number,
-                               post_tag.tag_name,
-                               s.title                                as series_name,
-                               calculate_score(post.title, g.body, g.description, s.title, tag_name,
-                                               post.post_category, ?) as _score
-                        FROM post
-                                 inner join guide g on post.post_id = g.guide_id
-                                 left join series s on g.series_id = s.series_id
-                                 left join post_tag on post_tag.post_id = post.post_id
-                        WHERE (is_private = false OR ? = true)
-        )
-        select guides.*,
-               _score + (
-                            select count(*)
-                            from guides p
-                            where ? like concat('%', p.tag_name, '%')
-                              and p.post_id = guides.post_id
-                        ) * 3 # 3 points for every tag contained in the query text
-                   as score
-        from guides
-             # Only obtain the maximum score
-        where _score >= all (select _score from guides g where g.post_id = guides.post_id)
-        group by post_id
-        having score > 0
-        order by score desc;`;
+    const queryString = `SELECT post.*,
+                                description,
+                                body,
+                                g.series_id,
+                                guide_number,
+                                s.title as series_name
+                         FROM post
+                                  inner join guide g on post.post_id = g.guide_id
+                                  left join series s on g.series_id = s.series_id
+                         WHERE (is_private = false OR ? = true)`;
     const [rows] = await connection.execute<RowDataPacket[]>(
       queryString,
-      [query, auth, query]
+      [auth]
     );
-    return plainToInstance(Guide, await Post.getTags<Guide>(rows as Guide[]));
+    return plainToInstance(Guide, await Post.getTags<Guide>(rows as Guide[]))
+      .filter(guide => guide.calculate_score(query) > 0)
+      .sort((a,b)=> b.calculate_score(query) - a.calculate_score(query));
   }
 
   async editGuide(newGuide: Guide): Promise<void> {
@@ -185,5 +168,12 @@ export class Guide extends Post {
       `SELECT series_id, title
        FROM series`);
     return results;
+  }
+
+  calculate_score(search: string): number {
+    return super.calculate_score(search) +
+      (this.title.includes(search) ? 5 : 0) +
+      (this.description.includes(search) ? 3 : 0) +
+      (this.body.includes(search) ? 1 : 0);
   }
 }

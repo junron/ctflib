@@ -40,13 +40,15 @@ export async function init() {
   // Non-atomic migrations but it's probably fine
   // If migration fails run regress
   try {
+    let migration_index = version;
     for (const migration of migrations.slice(version + 1)) {
       console.log("Running migration " + migration);
       const sql = await fs.readFile(`./migrations/${migration}`, "utf8");
       await connection.query(sql);
+      migration_index += 1;
+      await connection.query("delete from migration_version");
+      await connection.query("insert into migration_version (version) values (?)", [migration_index]);
     }
-    await connection.query("delete from migration_version");
-    await connection.query("insert into migration_version (version) values (?)", [migrations.length - 1]);
     await pruneDeletedFiles(connection);
     console.log("Migration complete");
   } catch (e) {

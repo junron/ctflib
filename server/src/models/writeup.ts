@@ -89,35 +89,21 @@ export class Writeup {
   static async search(query: string, auth: boolean): Promise<WriteupSearchResult[]> {
     const connection = await getConnection();
     // Only internal writeups are searchable
-    const queryString = `
-        with writeups as (select c.name,
-                                 writeup_id,
-                                 c.challenge_id,
-                                 ce.ctf_name,
-                                 writeup.poster_username,
-                                 c.category_name,
-                                 c.event_id,
-                                 ct.tag_name,
-                                 calculate_score(c.name, iw.body, '', '', tag_name, category_name, ?) as _score
-                          from writeup
-                                   inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
-                                   inner join challenge c on writeup.challenge_id = c.challenge_id
-                                   left join challenge_tag ct on c.challenge_id = ct.challenge_id
-                                   inner join ctf_event ce on c.event_id = ce.event_id
-                          where (writeup.is_private = FALSE or ? = TRUE))
-        select writeups.*,
-               _score + (select count(*)
-                         from writeups w
-                         where ? like concat('%', w.tag_name, '%')
-                           and w.writeup_id = writeups.writeup_id) * 2
-                   as score
-        from writeups
-        where _score >= all (select _score from writeups w where w.writeup_id = writeups.writeup_id)
-        group by writeup_id
-        having score > 0
-        order by score desc;`;
+    const queryString = `select c.name,
+                                writeup_id,
+                                c.challenge_id,
+                                ce.ctf_name,
+                                writeup.poster_username,
+                                c.category_name,
+                                c.event_id,
+                                iw.body
+                         from writeup
+                                  inner join internal_writeup iw on writeup.writeup_id = iw.internal_writeup_id
+                                  inner join challenge c on writeup.challenge_id = c.challenge_id
+                                  inner join ctf_event ce on c.event_id = ce.event_id
+                         where (writeup.is_private = FALSE or ? = TRUE);`;
     const [rows] = await connection.execute<RowDataPacket[]>(queryString,
-      [query, auth, query]);
+      [auth]);
     const challengeIDs = rows.map(row => row.challenge_id);
     if (challengeIDs.length === 0) {
       return [];
@@ -127,7 +113,7 @@ export class Writeup {
        FROM challenge_tag
        where challenge_tag.challenge_id IN (?)`, [challengeIDs]);
     return rows.map(row => {
-      return ({
+      return ([{
         writeup_id: row.writeup_id,
         name: row.name,
         poster_username: row.poster_username,
@@ -137,8 +123,10 @@ export class Writeup {
         category_name: row.category_name,
         tags: tags.filter(tag => tag.challenge_id === row.challenge_id)
           .map(tag => tag.tag_name)
-      });
-    });
+      }, row.body]);
+    }).filter(writeup => this.calculate_score(writeup[0], query, writeup[1]) > 0)
+      .sort((a, b) => this.calculate_score(b[0], query, b[1]) - this.calculate_score(a[0], query, a[1]))
+      .map(a => a[0]);
   }
 
   async deleteWriteup() {
@@ -269,5 +257,25 @@ features:
           .replaceAll("```xml-dtd", "```xml")
       };
     }));
+  }
+
+  private static calculate_score(writeup: WriteupSearchResult, search: string, body: string) {
+    search = search.toLowerCase();
+    let score = 0;
+    if (search == writeup.category_name.toLowerCase() || search.includes(writeup.category_name.toLowerCase())) {
+      score += 10;
+    }
+    for (const tag of writeup.tags) {
+      if (search.includes(tag.toLowerCase())) {
+        score += 3;
+      }
+    }
+    if (writeup.name.includes(search)) {
+      score += 5;
+    }
+    if (body.includes(search)) {
+      score += 1;
+    }
+    return score;
   }
 }
