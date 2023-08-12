@@ -120,7 +120,7 @@ export class Post {
         score += 3;
       }
     }
-    if(this.title.includes(search)){
+    if(this.title.toLowerCase().includes(search)){
       score += 5;
     }
     return score;

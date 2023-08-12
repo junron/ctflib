@@ -99,6 +99,6 @@ export class Resource extends Post {
   }
 
   calculate_score(search: string): number {
-    return super.calculate_score(search) + (this.body.includes(search) ? 1 : 0);
+    return super.calculate_score(search) + (this.body.toLowerCase().includes(search.toLowerCase()) ? 1 : 0);
   }
 }

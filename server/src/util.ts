@@ -37,6 +37,9 @@ export async function exportAndBuildWriteups() {
   const child = child_process.spawn("vitepress", ["build", "blog"], {
     cwd: path.join(config.writeups_dir, "../..")
   });
+  child.stdout.on("data", data=>{
+    console.log('stdout: ' + data);
+  });
   child.on("error", function (err) {
     console.log("Error", err);
   });

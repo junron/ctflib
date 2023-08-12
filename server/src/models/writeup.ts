@@ -270,10 +270,10 @@ features:
         score += 3;
       }
     }
-    if (writeup.name.includes(search)) {
+    if (writeup.name.toLowerCase().includes(search)) {
       score += 5;
     }
-    if (body.includes(search)) {
+    if (body.toLowerCase().includes(search)) {
       score += 1;
     }
     return score;
