@@ -76,8 +76,9 @@ router.post("/edit/:writeupID", async (req: Request, res: Response, next: NextFu
     if (errors.length > 0) {
       return res.validationFailure(errors);
     }
+    const result = await writeup.editWriteup(newWriteup);
     await exportAndBuildWriteups();
-    res.success("Writeup edited", await writeup.editWriteup(newWriteup));
+    res.success("Writeup edited", result);
   } else {
     res.failure("Writeup not found", "id");
   }
